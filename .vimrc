@@ -1,0 +1,276 @@
+" be iMproved, required
+set nocompatible
+
+" set leader to ,
+let mapleader = ";"
+
+call plug#begin('~/.vim/plugged')
+
+Plug '/usr/local/opt/fzf'
+Plug 'SirVer/ultisnips'
+Plug 'ap/vim-css-color'
+Plug 'itchyny/lightline.vim'
+Plug 'jiangmiao/auto-pairs'
+Plug 'jremmen/vim-ripgrep'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/goyo.vim'
+Plug 'justinmk/vim-sneak'
+Plug 'mattn/emmet-vim'
+Plug 'mustache/vim-mustache-handlebars'
+Plug 'pangloss/vim-javascript'
+Plug 'thaerkh/vim-indentguides'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-surround'
+Plug 'valloric/youcompleteme'
+Plug 'vim-ruby/vim-ruby'
+Plug 'w0rp/ale'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'branch': 'release/1.x'
+  \ }
+
+call plug#end()
+
+set nowrap                                              " do not wrap long lines
+set hidden                                              " buffers stay alive
+set linespace=3                                         " add space between lines in Gvim
+set clipboard=unnamedplus                               " sync with system clipboard
+set laststatus=2                                        " show status line always
+set noshowmode                                          " don't show mode status in bottom
+set shortmess+=F                                        " don't show filename o startup
+set encoding=utf-8                                      " use UTF-8 encoding internally
+set tabstop=2                                           " The width of a TAB is set to 4.
+set shiftwidth=2                                        " Indents will have a width of 4
+set softtabstop=2                                       " Sets the number of columns for a TB
+set expandtab                                           " Expand TABs to spaces
+set ttimeoutlen=0                                       " reduce delay on pressing escape
+set fillchars=""                                        " remove split line
+set colorcolumn=81                                      " visual indicator for columns
+set number                                              " Show hybridline number
+set cursorline                                          " show highlight on current line
+set nohlsearch                                          " search highlight
+set noswapfile                                          " do not create swap files
+set spelllang=en_us                                     " set spellcheck
+set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
+
+" set filetype specific tab formatting
+filetype plugin indent on
+autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
+
+" color settings
+" override palenight colorsheme - must be before setting colorsheme
+autocmd ColorScheme palenight highlight Normal guibg=#221b24
+autocmd ColorScheme palenight highlight CursorLine guibg=#292131
+autocmd ColorScheme palenight highlight ColorColumn guibg=#292131
+
+:let theme = 'palenight'                                " set colorscheme name here
+syntax enable                                           " enable syntax higlighting
+set background=dark                                     " inform vim of dark background
+:exe 'colorscheme ' . theme
+let g:lightline = { 'colorscheme': 'palenight' }        " lightline theme
+" let g:palenight_terminal_italics=1
+highlight LineNr ctermfg=white                          " show line highlight color
+
+if (has("termguicolors"))
+  set termguicolors
+endif
+
+if (has("nvim"))
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+
+if has("gui_running")
+    autocmd GUIEnter * set vb t_vb=
+end
+
+" NORMAL MODE KEYBINDINGS - NATIVE
+" --------------------------------
+" toggle relative numbers
+nnoremap <silent> <leader>n :set relativenumber!<CR>
+
+" scroll vertically easily
+noremap <silent> zj 10<C-y>
+noremap <silent> zk 10<C-e>
+
+" scroll horizontal easily
+noremap <silent> zh zH
+noremap <silent> zl zL
+
+" quickfix navigation
+noremap <silent> ]q :cnext<CR>
+noremap <silent> [q :cprevious<CR>
+
+" map H and L for tab switching
+nnoremap H gT
+nnoremap L gt
+
+" map go to definition to ctags shortcut
+nnoremap <silent> gd <C-]>
+
+" VISUAL MODE KEYBINDINGS - NATIVE
+" --------------------------------
+" retain visual selection on indent
+vnoremap > >gv
+vnoremap < <gv
+
+" OTHER SETTINGS
+" --------------
+" git settings
+" reset file to staging version
+:command! Gcos :!git checkout origin/staging %
+
+" show file diff in tmuz pane 1
+nnoremap <silent> <leader>w wy$:exe "!tmux send -t 1 'qq\b\bclear; git diff HEAD <C-R>"' Enter"<CR><CR>
+nnoremap <silent> <leader>q wy$:exe "!tmux send -t 1 'qq\b\bclear; git diff --staged' Enter"<CR><CR>
+
+" vim-fugitive key bindings
+nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>ga :Gwrite<CR>
+nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader>gb :Gblame<CR>
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gl :Glog<CR>
+nnoremap <silent> <leader>gr :0Glog<CR>
+
+" vim-commentary settings
+noremap <silent> \ :Commentary<CR>
+autocmd FileType ruby setlocal commentstring=#\ %s
+
+" indentguide settings
+" prevent indent when no filetype
+let g:indentguides_ignorelist = ['', 'txt']
+
+" FZF settings
+nnoremap <silent> <leader>gf :GFiles<CR>
+nnoremap <silent> <leader>f :Files<CR>
+nnoremap <silent> <leader>t :Tags<CR>
+nnoremap <silent> <leader>d :Buffers<CR>
+nnoremap <silent> <leader>l :Lines<CR>
+
+" tags used by fzf
+let g:fzf_tags_command = 'ctags -R --exclude=@.ctagsignore .'
+
+" fzf actions
+let g:fzf_action = {
+  \ 'ctrl-n': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit'
+  \ }
+
+" Rg and then FZF
+command! -bang -nargs=* Rgfzf
+  \ call fzf#vim#grep(
+  \   'rg --trim --column --line-number --hidden --ignore-case --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'right:50%:hidden', '?'),
+  \   <bang>0)
+
+" Interactive RG
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+" open interactive RG
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+" open interactive RG - shortcut
+nnoremap <silent> <leader><leader>f :RG!<CR>
+
+" Rg word under cursor and fzf
+nnoremap <silent> <leader>z yiw:Rgfzf <C-R>"<CR>
+
+" what is this
+set rtp+=~/.fzf
+
+" CUSTOM COMMANDS
+" prose mode
+" toggle write mode
+:command! WM call SwitchWriteMode()
+" toggle code mode
+:command! CM call SwitchCodeMode()
+
+function SwitchWriteMode()
+  set background=light
+  setlocal spell
+  colorscheme solarized8_high
+  Goyo
+endfunction
+
+function SwitchCodeMode()
+  set background=dark
+  Goyo!
+  :exe 'colorscheme ' . g:theme
+  setlocal nospell
+endfunction
+
+" netrw settings
+let g:netrw_liststyle = 3
+let g:netrw_banner = 0
+let g:netrw_browse_split = 1
+let g:netrw_winsize = 20
+let g:netrw_altv = 1
+
+" open txt files in writemode by default
+" autocmd BufNewFile,BufRead *.txt :Writemode | Goyo
+
+" autocmd BufNewFile,BufRead *.txt,*.md :WM
+" autocmd BufUnload *.txt,*.md :CM
+
+" Emmet config
+" redefine trigger key
+" let g:user_emmet_leader_key='k'
+let g:user_emmet_expandabbr_key = ';;'
+
+let g:user_emmet_settings = {
+  \  'html' : {
+  \    'snippets' : {
+  \          'd': "<div class=\"|\">\n</div>",
+  \     },
+  \   },
+  \ }
+
+let g:user_emmet_install_global = 0
+autocmd FileType html,css,hbs EmmetInstall
+let g:user_emmet_mode='i'
+
+" you complete me settings
+let g:ycm_semantic_triggers = {
+    \   'css': [ 're!^', 're!^\s+', ': ' ],
+    \   'scss': [ 're!^', 're!^\s+', ': ' ],
+    \ }
+
+" vim-rails settings
+noremap <silent> <leader>r :R<CR>
+noremap <silent> <leader>a :A<CR>
+
+" ale linter settings
+let g:ale_linters = {
+  \ 'ruby': ['rubocop'],
+  \ 'javascript': ['eslint']
+  \ }
+
+let g:ale_fixers = {
+  \ 'ruby': ['rubocop'],
+  \ 'javascript': ['eslint']
+  \ }
+
+" prettier first and then fix lint
+noremap <silent> <leader>p :Prettier<CR>:ALEFix<CR>
+
+" fix lint on save
+" let g:ale_fix_on_save = 1
+
+" vim sneak settings
+map f <Plug>Sneak_s
+map F <Plug>Sneak_S
+let g:sneak#label = 1
+hi! link Sneak Search
+
