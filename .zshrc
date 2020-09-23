@@ -82,7 +82,6 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
-    vi-mode
     zsh-syntax-highlighting
     zsh-autosuggestions
 )
@@ -102,14 +101,14 @@ export PATH="/usr/local/mysql/bin:$PATH"
 
 # aliases
 alias mux='tmuxinator'
-alias vim='nvim'
-alias vi='vim'
+alias vi='nvim'
 alias vif='vi $(fzf)'
 alias zshrc='vi ~/.zshrc'
 alias vimrc='vi ~/.vimrc'
 alias gitconfig='vi ~/.gitconfig'
 alias tmux.conf='vi ~/.tmux.conf'
 alias delta.conf='vi ~/.delta.conf'
+alias alacritty='vi ~/.alacritty.yml'
 
 alias cdf='cd $(fd -t d | fzf)'
 
@@ -130,6 +129,9 @@ alias gc='git commit'
 
 # .files repo alises
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# alacritty required screen-256 and overrides xterm
+alias tmux='TERM=xterm-256color tmux'
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -173,6 +175,7 @@ export NVM_DIR="/Users/elelango/.nvm"
 # export PKG_CONFIG_PATH="/usr/local/opt/mysql@5.7/lib/pkgconfig"
 # export PATH=${PATH}:/usr/local/mysql/bin/
 export JAVA_HOME="/usr/libexec/java_home -v 1.8.0_192"
+# export CLASSPATH="/Users/elelango/lox/lox"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 
@@ -182,3 +185,4 @@ export JAVA_HOME="/usr/libexec/java_home -v 1.8.0_192"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
+export PATH="/usr/local/opt/llvm/bin:$PATH"

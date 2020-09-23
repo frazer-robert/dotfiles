@@ -1,4 +1,3 @@
-" be iMproved, required
 set nocompatible
 
 " set leader to ,
@@ -19,20 +18,35 @@ Plug 'justinmk/vim-sneak'
 Plug 'mattn/emmet-vim'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'pangloss/vim-javascript'
-Plug 'thaerkh/vim-indentguides'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
-Plug 'valloric/youcompleteme'
 Plug 'vim-ruby/vim-ruby'
-Plug 'w0rp/ale'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-lua/completion-nvim'
+Plug 'nvim-lua/diagnostic-nvim'
+" Plug 'w0rp/ale'
+" Plug 'Valloric/youcompleteme', { 
+"   \   'do': './install.py --clangd-completer --rust-completer --java-completer --ts-completer'
+"   \ }
 Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'branch': 'release/1.x'
-  \ }
+  \   'do': 'yarn install',
+  \   'branch': 'release/1.x'
+  \ } 
 
 call plug#end()
+
+lua << EOF
+  require'nvim_lsp'.solargraph.setup{}
+  require'nvim_lsp'.tsserver.setup{}
+  require'nvim_lsp'.jdtls.setup{}
+  require'nvim_lsp'.clangd.setup{}
+EOF
+
+" Use completion-nvim in every buffer
+autocmd BufEnter * lua require'completion'.on_attach()
+autocmd BufEnter * lua require'diagnostic'.on_attach()
 
 set nowrap                                              " do not wrap long lines
 set hidden                                              " buffers stay alive
@@ -48,32 +62,40 @@ set softtabstop=2                                       " Sets the number of col
 set expandtab                                           " Expand TABs to spaces
 set ttimeoutlen=0                                       " reduce delay on pressing escape
 set fillchars=""                                        " remove split line
-set colorcolumn=81                                      " visual indicator for columns
+" set colorcolumn=81                                      " visual indicator for columns
 set number                                              " Show hybridline number
-set cursorline                                          " show highlight on current line
 set nohlsearch                                          " search highlight
 set noswapfile                                          " do not create swap files
 set spelllang=en_us                                     " set spellcheck
 set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
 
+" performance optimization settings
+syntax sync minlines=256                                " limit syntax highlighting for lines
+set synmaxcol=200                                       " limit syntax highlighting for columns
+set lazyredraw                                          " lazy redraw for performance
+" set re=1
+
 " set filetype specific tab formatting
 filetype plugin indent on
 autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType java setlocal expandtab shiftwidth=2 tabstop=2
 
 " color settings
 " override palenight colorsheme - must be before setting colorsheme
-autocmd ColorScheme palenight highlight Normal guibg=#221b24
-autocmd ColorScheme palenight highlight CursorLine guibg=#292131
-autocmd ColorScheme palenight highlight ColorColumn guibg=#292131
+autocmd ColorScheme onehalfdark highlight Normal guibg=#1d1f21
+autocmd ColorScheme onehalfdark highlight CursorLine guibg=#26292e
+autocmd ColorScheme onehalfdark highlight ColorColumn guibg=#26292b
+autocmd ColorScheme onehalfdark highlight LineNr guibg=#1d1f21
+autocmd ColorScheme onehalfdark highlight LineNr guifg=#555555
 
-:let theme = 'palenight'                                " set colorscheme name here
+:let theme = 'onehalfdark'                              " set colorscheme name here
 syntax enable                                           " enable syntax higlighting
 set background=dark                                     " inform vim of dark background
 :exe 'colorscheme ' . theme
-let g:lightline = { 'colorscheme': 'palenight' }        " lightline theme
-" let g:palenight_terminal_italics=1
+highlight Comment cterm=italic gui=italic
 highlight LineNr ctermfg=white                          " show line highlight color
+let g:palenight_terminal_italics=1
 
 if (has("termguicolors"))
   set termguicolors
@@ -89,6 +111,7 @@ end
 
 " NORMAL MODE KEYBINDINGS - NATIVE
 " --------------------------------
+
 " toggle relative numbers
 nnoremap <silent> <leader>n :set relativenumber!<CR>
 
@@ -108,8 +131,11 @@ noremap <silent> [q :cprevious<CR>
 nnoremap H gT
 nnoremap L gt
 
+" toggle cursorline
+noremap <silent> <leader>c :set cursorline!<CR>
+
 " map go to definition to ctags shortcut
-nnoremap <silent> gd <C-]>
+" nnoremap <silent> gd <C-]>
 
 " VISUAL MODE KEYBINDINGS - NATIVE
 " --------------------------------
@@ -139,6 +165,32 @@ nnoremap <silent> <leader>gr :0Glog<CR>
 " vim-commentary settings
 noremap <silent> \ :Commentary<CR>
 autocmd FileType ruby setlocal commentstring=#\ %s
+
+" neovim lsp
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+" nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+" nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+" neovim completion
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+" Avoid showing message extra message when using completion
+set shortmess+=c
+" show untisnippets in completion
+let g:completion_enable_snippet = 'UltiSnips'
+
+" neovim diagnostics
+" don't show diagnostics on insert mode
+let g:diagnostic_insert_delay = 1
 
 " indentguide settings
 " prevent indent when no filetype
@@ -241,11 +293,36 @@ let g:user_emmet_install_global = 0
 autocmd FileType html,css,hbs EmmetInstall
 let g:user_emmet_mode='i'
 
+" lightline settings
+" show relative project root path
+let g:lightline = {
+      \ 'colorscheme': theme,
+      \ 'component_function': {
+      \   'filename': 'LightlineFilename',
+      \ }
+      \ }
+
+function! LightlineFilename()
+  let root = fnamemodify(get(b:, 'git_dir'), ':h')
+  let path = expand('%:p')
+  if path[:len(root)-1] ==# root
+    return path[len(root)+1:]
+  endif
+  return expand('%')
+endfunction
+
 " you complete me settings
-let g:ycm_semantic_triggers = {
-    \   'css': [ 're!^', 're!^\s+', ': ' ],
-    \   'scss': [ 're!^', 're!^\s+', ': ' ],
-    \ }
+" Start autocompletion after 4 chars
+" let g:ycm_min_num_of_chars_for_completion = 4
+" let g:ycm_min_num_identifier_candidate_chars = 4
+" let g:ycm_enable_diagnostic_highlighting = 0
+" " Don't show YCM's preview window
+" set completeopt-=preview
+" let g:ycm_add_preview_to_completeopt = 0
+" let g:ycm_semantic_triggers = {
+"     \   'css': [ 're!^', 're!^\s+', ': ' ],
+"     \   'scss': [ 're!^', 're!^\s+', ': ' ],
+"     \ }
 
 " vim-rails settings
 noremap <silent> <leader>r :R<CR>
@@ -254,12 +331,17 @@ noremap <silent> <leader>a :A<CR>
 " ale linter settings
 let g:ale_linters = {
   \ 'ruby': ['rubocop'],
-  \ 'javascript': ['eslint']
+  \ 'javascript': ['eslint'],
   \ }
+
+let g:ale_java_javac_sourcepath = 'src'
+" let g:ale_java_javac_classpath = '/Users/elelango/lox/bin'
+" let g:ale_java_javac_executable = 'src'
+" let g:ale_java_javac_sourcepath = './src'
 
 let g:ale_fixers = {
   \ 'ruby': ['rubocop'],
-  \ 'javascript': ['eslint']
+  \ 'javascript': ['eslint'],
   \ }
 
 " prettier first and then fix lint
@@ -273,4 +355,8 @@ map f <Plug>Sneak_s
 map F <Plug>Sneak_S
 let g:sneak#label = 1
 hi! link Sneak Search
+
+" ultisnips
+" override default tab to expand
+let g:UltiSnipsExpandTrigger = '<f5>'
 
