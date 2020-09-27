@@ -100,11 +100,13 @@ export EDITOR='nvim'
 export PATH="/usr/local/mysql/bin:$PATH"
 
 # aliases
+alias df='dotfiles' 
 alias mux='tmuxinator'
 alias vi='nvim'
 alias vif='vi $(fzf)'
 alias zshrc='vi ~/.zshrc'
 alias vimrc='vi ~/.vimrc'
+alias iv='vi ~/.config/nvim/init.vim'
 alias gitconfig='vi ~/.gitconfig'
 alias tmux.conf='vi ~/.tmux.conf'
 alias delta.conf='vi ~/.delta.conf'
@@ -186,3 +188,5 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
 export PATH="/usr/local/opt/llvm/bin:$PATH"
+export PATH="/Users/elelango/ccls/Release:$PATH"
+

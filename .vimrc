@@ -1,8 +1,5 @@
 set nocompatible
 
-" set leader to ,
-let mapleader = ";"
-
 call plug#begin('~/.vim/plugged')
 
 Plug '/usr/local/opt/fzf'
@@ -15,7 +12,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'justinmk/vim-sneak'
-Plug 'mattn/emmet-vim'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-commentary'
@@ -23,13 +19,14 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'vim-ruby/vim-ruby'
+Plug 'w0rp/ale'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-lua/diagnostic-nvim'
-" Plug 'w0rp/ale'
-" Plug 'Valloric/youcompleteme', { 
-"   \   'do': './install.py --clangd-completer --rust-completer --java-completer --ts-completer'
-"   \ }
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-lua/telescope.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'prettier/vim-prettier', {
   \   'do': 'yarn install',
   \   'branch': 'release/1.x'
@@ -37,20 +34,10 @@ Plug 'prettier/vim-prettier', {
 
 call plug#end()
 
-" lua configurations
-lua << EOF
-  local nvim_lsp = require'nvim_lsp'
-  nvim_lsp.solargraph.setup{}
-  nvim_lsp.tsserver.setup{}
-  nvim_lsp.clangd.setup{}
-  nvim_lsp.jdtls.setup{
-    root_dir = nvim_lsp.util.root_pattern('*')
-  }
-EOF
 
-" Use completion-nvim and diagnostic-nvim in every buffer
-autocmd BufEnter * lua require'completion'.on_attach()
-autocmd BufEnter * lua require'diagnostic'.on_attach()
+
+
+let mapleader = ";"                                     " set leader to ,
 
 set nowrap                                              " do not wrap long lines
 set hidden                                              " buffers stay alive
@@ -83,7 +70,7 @@ set lazyredraw                                          " lazy redraw for perfor
 filetype plugin indent on
 
 " ruby settings
-autocmd FileType ruby nnoremap <silent> gd <C-]>
+" autocmd FileType ruby nnoremap <silent> gd <C-]>
 
 " color settings
 " override colorsheme - must be before setting colorsheme
@@ -100,7 +87,6 @@ set background=dark                                     " inform vim of dark bac
 :exe 'colorscheme ' . theme
 
 highlight Comment cterm=italic gui=italic
-highlight LineNr ctermfg=white                          " show line highlight color
 
 " additional color settings
 if (has("termguicolors"))
@@ -134,15 +120,15 @@ noremap <silent> zl zL
 noremap <silent> ]q :cnext<CR>
 noremap <silent> [q :cprevious<CR>
 
+" noremap <silent> ]q :cnext<CR>
+" noremap <silent> [q :cprevious<CR>
+
 " map H and L for tab switching
 nnoremap H gT
 nnoremap L gt
 
 " toggle cursorline
 noremap <silent> <leader>c :set cursorline!<CR>
-
-" map go to definition to ctags shortcut
-" nnoremap <silent> gd <C-]>
 
 " --------------------------------------------------------------------
 " VISUAL MODE KEYBINDINGS - NATIVE
@@ -181,39 +167,9 @@ nnoremap <silent> <leader>gr :0Glog<CR>
 noremap <silent> \ :Commentary<CR>
 autocmd FileType ruby setlocal commentstring=#\ %s
 
-" neovim lsp
-" --------------------------------------------------------------------
-nnoremap <silent> gD    <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
-" nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
-" nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
-nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
-nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
-nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
-
-" neovim completion
-" --------------------------------------------------------------------
-" Use <Tab> and <S-Tab> to navigate through popup menu
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" Set completeopt to have a better completion experience
-set completeopt=menuone,noinsert,noselect
-" Avoid showing message extra message when using completion
-set shortmess+=c
-" show untisnippets in completion
-let g:completion_enable_snippet = 'UltiSnips'
-
-" neovim diagnostics
-" --------------------------------------------------------------------
-" don't show diagnostics on insert mode
-let g:diagnostic_insert_delay = 1
-
 " indentguide settings
 " --------------------------------------------------------------------
-" prevent indent when no filetype
-let g:indentguides_ignorelist = ['', 'txt']
+let g:indentguides_ignorelist = ['', 'txt']             " prevent indent when no filetype
 
 " FZF settings
 " --------------------------------------------------------------------
@@ -262,34 +218,6 @@ nnoremap <silent> <leader>z yiw:Rgfzf <C-R>"<CR>
 " what is this
 set rtp+=~/.fzf
 
-" --------------------------------------------------------------------
-" CUSTOM COMMANDS
-" --------------------------------------------------------------------
-
-" prose mode
-" --------------------------------------------------------------------
-" toggle write mode
-:command! WM call SwitchWriteMode()
-" toggle code mode
-:command! CM call SwitchCodeMode()
-
-function SwitchWriteMode()
-  set background=light
-  setlocal spell
-  colorscheme solarized8_high
-  Goyo
-endfunction
-
-function SwitchCodeMode()
-  set background=dark
-  Goyo!
-  :exe 'colorscheme ' . g:theme
-  setlocal nospell
-endfunction
-
-" autocmd BufNewFile,BufRead *.txt,*.md :WM
-" autocmd BufUnload *.txt,*.md :CM
-
 " netrw settings
 " --------------------------------------------------------------------
 let g:netrw_liststyle = 3
@@ -297,24 +225,6 @@ let g:netrw_banner = 0
 let g:netrw_browse_split = 1
 let g:netrw_winsize = 20
 let g:netrw_altv = 1
-
-" Emmet config
-" --------------------------------------------------------------------
-" redefine trigger key
-" let g:user_emmet_leader_key='k'
-let g:user_emmet_expandabbr_key = ';;'
-
-let g:user_emmet_settings = {
-  \  'html' : {
-  \    'snippets' : {
-  \          'd': "<div class=\"|\">\n</div>",
-  \     },
-  \   },
-  \ }
-
-let g:user_emmet_install_global = 0
-autocmd FileType html,css,hbs EmmetInstall
-let g:user_emmet_mode='i'
 
 " lightline settings
 " --------------------------------------------------------------------
@@ -335,20 +245,6 @@ function! LightlineFilename()
   return expand('%')
 endfunction
 
-" you complete me settings
-" --------------------------------------------------------------------
-" Start autocompletion after 4 chars
-" let g:ycm_min_num_of_chars_for_completion = 4
-" let g:ycm_min_num_identifier_candidate_chars = 4
-" let g:ycm_enable_diagnostic_highlighting = 0
-" " Don't show YCM's preview window
-" set completeopt-=preview
-" let g:ycm_add_preview_to_completeopt = 0
-" let g:ycm_semantic_triggers = {
-"     \   'css': [ 're!^', 're!^\s+', ': ' ],
-"     \   'scss': [ 're!^', 're!^\s+', ': ' ],
-"     \ }
-
 " vim-rails settings
 " --------------------------------------------------------------------
 noremap <silent> <leader>r :R<CR>
@@ -361,10 +257,9 @@ let g:ale_linters = {
   \ 'javascript': ['eslint'],
   \ }
 
-let g:ale_java_javac_sourcepath = 'src'
-" let g:ale_java_javac_classpath = '/Users/elelango/lox/bin'
-" let g:ale_java_javac_executable = 'src'
-" let g:ale_java_javac_sourcepath = './src'
+let g:ale_linters_explicit = 1                          " Only run linters named in ale_linters settings.
+
+let g:ale_java_javac_sourcepath = 'src'                 " set source path for java files
 
 let g:ale_fixers = {
   \ 'ruby': ['rubocop'],
@@ -386,6 +281,85 @@ hi! link Sneak Search
 
 " ultisnips
 " --------------------------------------------------------------------
-" override default tab to expand
-let g:UltiSnipsExpandTrigger = '<f5>'
+let g:UltiSnipsExpandTrigger = '<f5>'                   " override default tab to expand
 
+" goyo prose mode
+" --------------------------------------------------------------------
+:command! WM call SwitchWriteMode()                     " toggle write mode
+:command! CM call SwitchCodeMode()                      " toggle code mode
+
+function SwitchWriteMode()
+  set background=light
+  setlocal spell
+  colorscheme solarized8_high
+  Goyo
+endfunction
+
+function SwitchCodeMode()
+  set background=dark
+  Goyo!
+  :exe 'colorscheme ' . g:theme
+  setlocal nospell
+endfunction
+
+" autocmd BufNewFile,BufRead *.txt,*.md :WM
+" autocmd BufUnload *.txt,*.md :CM
+
+" neovim lsp
+" --------------------------------------------------------------------
+lua << EOF
+  local nvim_lsp = require'nvim_lsp'
+  nvim_lsp.solargraph.setup{}
+  nvim_lsp.tsserver.setup{}
+  nvim_lsp.clangd.setup{}
+  require'nvim_lsp'.rust_analyzer.setup{}
+  nvim_lsp.jdtls.setup{}
+EOF
+
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gi    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.declaration()<CR>
+
+" neovim completion
+" --------------------------------------------------------------------
+autocmd BufEnter * lua require'completion'.on_attach()
+
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+set completeopt=menuone,noinsert,noselect               " Set completeopt to have a better completion experience
+set shortmess+=c                                        " Avoid showing message extra message when using completion
+let g:completion_enable_snippet = 'UltiSnips'           " show untisnippets in completion
+
+" neovim diagnostics settings
+" --------------------------------------------------------------------
+autocmd BufEnter * lua require'diagnostic'.on_attach()
+let g:diagnostic_insert_delay = 1                       " don't show diagnostics on insert mode
+
+" cycle through diagnostics
+noremap <silent> ]w :NextDiagnosticCycle<CR>
+noremap <silent> [w :PrevDiagnosticCycle<CR>
+
+" neovim telescope settings
+" --------------------------------------------------------------------
+nnoremap <Leader>f <cmd>lua require'telescope.builtin'.find_files{}<CR>
+nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
+nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
+
+" neovim treesitter settings
+" --------------------------------------------------------------------
+lua << EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "all",
+  highlight = {
+    enable = true,
+  },
+}
+EOF
