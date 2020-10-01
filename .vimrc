@@ -1,5 +1,12 @@
 set nocompatible
 
+" automatically install vim-plug in absence
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 
 Plug '/usr/local/opt/fzf'
@@ -33,9 +40,6 @@ Plug 'prettier/vim-prettier', {
   \ } 
 
 call plug#end()
-
-
-
 
 let mapleader = ";"                                     " set leader to ,
 
@@ -84,7 +88,7 @@ syntax enable                                           " enable syntax higlight
 set background=dark                                     " inform vim of dark background
 
 :let theme = 'onehalfdark'                              " set colorscheme name here
-:exe 'colorscheme ' . theme
+:exe 'colorscheme ' g:theme
 
 highlight Comment cterm=italic gui=italic
 
@@ -230,7 +234,7 @@ let g:netrw_altv = 1
 " --------------------------------------------------------------------
 " show relative project root path
 let g:lightline = {
-      \ 'colorscheme': theme,
+      \ 'colorscheme': g:theme,
       \ 'component_function': {
       \   'filename': 'LightlineFilename',
       \ }
@@ -298,7 +302,7 @@ endfunction
 function SwitchCodeMode()
   set background=dark
   Goyo!
-  :exe 'colorscheme ' . g:theme
+  :exe 'colorscheme ' g:theme
   setlocal nospell
 endfunction
 
@@ -349,9 +353,9 @@ noremap <silent> [w :PrevDiagnosticCycle<CR>
 
 " neovim telescope settings
 " --------------------------------------------------------------------
-nnoremap <Leader>f <cmd>lua require'telescope.builtin'.find_files{}<CR>
-nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
-nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
+" nnoremap <Leader>f <cmd>lua require'telescope.builtin'.find_files{}<CR>
+" nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
+" nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
 
 " neovim treesitter settings
 " --------------------------------------------------------------------
