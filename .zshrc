@@ -10,7 +10,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/elelango/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Turn off all beeps
 unsetopt BEEP
@@ -185,7 +185,10 @@ export JAVA_HOME="/usr/libexec/java_home -v 1.8.0_192"
 # export PATH="$PATH:$HOME/.rvm/bin"
 # export PATH="$HOME/local/ruby-2.3.7/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+if command -v rbenv &> /dev/null
+then
+  eval "$(rbenv init -)"
+fi
 
 export PATH="/usr/local/opt/llvm/bin:$PATH"
 export PATH="/Users/elelango/ccls/Release:$PATH"
