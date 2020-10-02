@@ -1,5 +1,5 @@
-set nocompatible
-
+set nocompatible              
+                                                                                                                                                          
 " automatically install vim-plug in absence
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -12,9 +12,7 @@ call plug#begin('~/.vim/plugged')
 Plug '/usr/local/opt/fzf'
 Plug 'SirVer/ultisnips'
 Plug 'ap/vim-css-color'
-Plug 'itchyny/lightline.vim'
 Plug 'jiangmiao/auto-pairs'
-Plug 'jremmen/vim-ripgrep'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
@@ -313,6 +311,7 @@ endfunction
 " --------------------------------------------------------------------
 lua << EOF
   local nvim_lsp = require'nvim_lsp'
+  nvim_lsp.sumneko_lua.setup{}
   nvim_lsp.solargraph.setup{}
   nvim_lsp.tsserver.setup{}
   nvim_lsp.clangd.setup{}
@@ -367,3 +366,16 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 EOF
+
+" status line settings
+" --------------------------------------------------------------------
+function! StatusLine()
+    return luaeval("require'status-line'.statusLine()")
+endfunction
+
+set statusline=%!StatusLine()
+
+" lua require('sample')
+
+" nnoremap <leader>h :lua crseven()<CR>
+
