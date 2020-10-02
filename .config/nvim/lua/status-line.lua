@@ -9,14 +9,14 @@ function S.statusLine()
   ..' %f'                                           -- file path
   ..' %m%h%r%w'                                     -- file flags
   ..'%='                                            -- left-right separator
-  ..'%{FugitiveHead()}'                             -- current git branch
-  ..' | %{&fileformat}'                                -- file format - unix
+  .."%{FugitiveHead()!=''?FugitiveHead().' | ':''}" -- current git branch
+  ..'%{&fileformat}'                                -- file format - unix
   ..' | %{&fileencoding?&fileencoding:&encoding}'   -- file encoding
   if filetype ~= '' then
     statusline = statusline..' | '..filetype        -- file type
   end
   statusline = statusline
-  ..'%-6(%3l:%c%)'                                  -- line:column numbers
+  ..' %-7(%4l:%-2c%)'                               -- line:column numbers
   ..' '                                             -- extra space at the end
   return statusline
 end

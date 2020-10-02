@@ -10,32 +10,13 @@ endif
 call plug#begin('~/.vim/plugged')
 
 Plug '/usr/local/opt/fzf'
-Plug 'SirVer/ultisnips'
-Plug 'ap/vim-css-color'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'junegunn/goyo.vim'
 Plug 'justinmk/vim-sneak'
-Plug 'mustache/vim-mustache-handlebars'
-Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
-Plug 'vim-ruby/vim-ruby'
-Plug 'w0rp/ale'
-Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-lua/completion-nvim'
-Plug 'nvim-lua/diagnostic-nvim'
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-lua/telescope.nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'prettier/vim-prettier', {
-  \   'do': 'yarn install',
-  \   'branch': 'release/1.x'
-  \ } 
 
 call plug#end()
 
@@ -43,8 +24,6 @@ let mapleader = ";"                                     " set leader to ,
 
 set nowrap                                              " do not wrap long lines
 set hidden                                              " buffers stay alive
-set linespace=3                                         " add space between lines in Gvim
-set clipboard=unnamedplus                               " sync with system clipboard
 set laststatus=2                                        " show status line always
 set noshowmode                                          " don't show mode status in bottom
 set shortmess+=F                                        " don't show filename o startup
@@ -59,8 +38,6 @@ set number                                              " Show hybridline number
 set nohlsearch                                          " search highlight
 set noswapfile                                          " do not create swap files
 set spelllang=en_us                                     " set spellcheck
-set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
-set cursorline                                          " show cursor line
 set mouse=a                                             " enable scrolling with mouse
 
 " performance optimization settings
@@ -71,37 +48,8 @@ set lazyredraw                                          " lazy redraw for perfor
 " set filetype specific tab formatting
 filetype plugin indent on
 
-" ruby settings
-" autocmd FileType ruby nnoremap <silent> gd <C-]>
-
-" color settings
-" override colorsheme - must be before setting colorsheme
-autocmd ColorScheme onehalfdark highlight Normal guibg=#1d1f21
-autocmd ColorScheme onehalfdark highlight CursorLine guibg=#26292e
-autocmd ColorScheme onehalfdark highlight ColorColumn guibg=#26292b
-autocmd ColorScheme onehalfdark highlight LineNr guibg=#1d1f21
-autocmd ColorScheme onehalfdark highlight LineNr guifg=#555555
-
 syntax enable                                           " enable syntax higlighting
 set background=dark                                     " inform vim of dark background
-
-:let theme = 'onehalfdark'                              " set colorscheme name here
-:exe 'colorscheme ' g:theme
-
-highlight Comment cterm=italic gui=italic
-
-" additional color settings
-if (has("termguicolors"))
-  set termguicolors
-endif
-
-if (has("nvim"))
-  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-endif
-
-if has("gui_running")
-    autocmd GUIEnter * set vb t_vb=
-end
 
 " --------------------------------------------------------------------
 " NORMAL MODE KEYBINDINGS - NATIVE
@@ -169,10 +117,6 @@ nnoremap <silent> <leader>gr :0Glog<CR>
 noremap <silent> \ :Commentary<CR>
 autocmd FileType ruby setlocal commentstring=#\ %s
 
-" indentguide settings
-" --------------------------------------------------------------------
-let g:indentguides_ignorelist = ['', 'txt']             " prevent indent when no filetype
-
 " FZF settings
 " --------------------------------------------------------------------
 nnoremap <silent> <leader>gf :GFiles<CR>
@@ -228,52 +172,6 @@ let g:netrw_browse_split = 1
 let g:netrw_winsize = 20
 let g:netrw_altv = 1
 
-" lightline settings
-" --------------------------------------------------------------------
-" show relative project root path
-let g:lightline = {
-      \ 'colorscheme': g:theme,
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename',
-      \ }
-      \ }
-
-function! LightlineFilename()
-  let root = fnamemodify(get(b:, 'git_dir'), ':h')
-  let path = expand('%:p')
-  if path[:len(root)-1] ==# root
-    return path[len(root)+1:]
-  endif
-  return expand('%')
-endfunction
-
-" vim-rails settings
-" --------------------------------------------------------------------
-noremap <silent> <leader>r :R<CR>
-noremap <silent> <leader>a :A<CR>
-
-" ale linter settings
-" --------------------------------------------------------------------
-let g:ale_linters = {
-  \ 'ruby': ['rubocop'],
-  \ 'javascript': ['eslint'],
-  \ }
-
-let g:ale_linters_explicit = 1                          " Only run linters named in ale_linters settings.
-
-let g:ale_java_javac_sourcepath = 'src'                 " set source path for java files
-
-let g:ale_fixers = {
-  \ 'ruby': ['rubocop'],
-  \ 'javascript': ['eslint'],
-  \ }
-
-" prettier first and then fix lint
-noremap <silent> <leader>p :Prettier<CR>:ALEFix<CR>
-
-" fix lint on save
-" let g:ale_fix_on_save = 1
-
 " vim sneak settings
 " --------------------------------------------------------------------
 map f <Plug>Sneak_s
@@ -281,101 +179,17 @@ map F <Plug>Sneak_S
 let g:sneak#label = 1
 hi! link Sneak Search
 
-" ultisnips
-" --------------------------------------------------------------------
-let g:UltiSnipsExpandTrigger = '<f5>'                   " override default tab to expand
-
-" goyo prose mode
-" --------------------------------------------------------------------
-:command! WM call SwitchWriteMode()                     " toggle write mode
-:command! CM call SwitchCodeMode()                      " toggle code mode
-
-function SwitchWriteMode()
-  set background=light
-  setlocal spell
-  colorscheme solarized8_high
-  Goyo
-endfunction
-
-function SwitchCodeMode()
-  set background=dark
-  Goyo!
-  :exe 'colorscheme ' g:theme
-  setlocal nospell
-endfunction
-
-" autocmd BufNewFile,BufRead *.txt,*.md :WM
-" autocmd BufUnload *.txt,*.md :CM
-
-" neovim lsp
-" --------------------------------------------------------------------
-lua << EOF
-  local nvim_lsp = require'nvim_lsp'
-  nvim_lsp.sumneko_lua.setup{}
-  nvim_lsp.solargraph.setup{}
-  nvim_lsp.tsserver.setup{}
-  nvim_lsp.clangd.setup{}
-  require'nvim_lsp'.rust_analyzer.setup{}
-  nvim_lsp.jdtls.setup{}
-EOF
-
-nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
-nnoremap <silent> gi    <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
-nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
-nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
-nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
-nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
-nnoremap <silent> gD    <cmd>lua vim.lsp.buf.declaration()<CR>
-
-" neovim completion
-" --------------------------------------------------------------------
-autocmd BufEnter * lua require'completion'.on_attach()
-
-" Use <Tab> and <S-Tab> to navigate through popup menu
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-set completeopt=menuone,noinsert,noselect               " Set completeopt to have a better completion experience
-set shortmess+=c                                        " Avoid showing message extra message when using completion
-let g:completion_enable_snippet = 'UltiSnips'           " show untisnippets in completion
-
-" neovim diagnostics settings
-" --------------------------------------------------------------------
-autocmd BufEnter * lua require'diagnostic'.on_attach()
-let g:diagnostic_insert_delay = 1                       " don't show diagnostics on insert mode
-
-" cycle through diagnostics
-noremap <silent> ]w :NextDiagnosticCycle<CR>
-noremap <silent> [w :PrevDiagnosticCycle<CR>
-
-" neovim telescope settings
-" --------------------------------------------------------------------
-" nnoremap <Leader>f <cmd>lua require'telescope.builtin'.find_files{}<CR>
-" nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
-" nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
-
-" neovim treesitter settings
-" --------------------------------------------------------------------
-lua << EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "all",
-  highlight = {
-    enable = true,
-  },
-}
-EOF
-
 " status line settings
 " --------------------------------------------------------------------
-function! StatusLine()
-    return luaeval("require'status-line'.statusLine()")
-endfunction
-
-set statusline=%!StatusLine()
-
-" lua require('sample')
-
-" nnoremap <leader>h :lua crseven()<CR>
-
+set statusline=
+set statusline+=%2n\ 
+set statusline+=%f
+set statusline+=\ 
+set statusline+=%m%h%r%w
+set statusline+=%=
+set statusline+=%{FugitiveHead()!=''?FugitiveHead().'\ \|\ ':''}
+set statusline+=%{&fileformat}
+set statusline+=\ \|\ %{&fileencoding?&fileencoding:&encoding}
+set statusline+=%{&ft!=''?'\ \ \|\ '.&ft:''}
+set statusline+=\ %-7(%4l:%-2c%)
+set statusline+=\ 
