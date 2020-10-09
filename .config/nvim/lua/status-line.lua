@@ -1,15 +1,26 @@
 local api = vim.api
 local S = {}
 
+local context
+local notes = io.popen("pwd"):read("*a")
+
+if string.find(notes, "/.notes") then
+  context = 'notes | '
+end
+
 function S.statusLine()
   local filetype = api.nvim_buf_get_option(0, 'filetype')
+  if not context then
+    context =
+    "%{FugitiveHead()!=''?FugitiveHead().' | ':''}" -- current git branch
+  end
   local statusline = ''
   statusline = statusline
   ..'%2n'                                           -- buffer nummber
   ..' %f'                                           -- file path
   ..' %m%h%r%w'                                     -- file flags
   ..'%='                                            -- left-right separator
-  .."%{FugitiveHead()!=''?FugitiveHead().' | ':''}" -- current git branch
+  ..context
   ..'%{&fileformat}'                                -- file format - unix
   ..' | %{&fileencoding?&fileencoding:&encoding}'   -- file encoding
   if filetype ~= '' then

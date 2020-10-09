@@ -93,8 +93,9 @@ source $ZSH/oh-my-zsh.sh
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-export LANG=en_US.UTF-8
 export EDITOR='nvim'
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # export mysql@5.7.28
 export PATH="/usr/local/mysql/bin:$PATH"
@@ -111,6 +112,7 @@ alias gitconfig='vi ~/.gitconfig'
 alias tmux.conf='vi ~/.tmux.conf'
 alias delta.conf='vi ~/.delta.conf'
 alias alacritty='vi ~/.alacritty.yml'
+alias note='cd ~/.notes && vi'
 
 alias cdf='cd $(fd -t d | fzf)'
 

@@ -1,7 +1,7 @@
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
-set nocompatible              
-                                                                                                                                                          
+set nocompatible
+
 " automatically install vim-plug in absence
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -334,6 +334,8 @@ noremap <silent> [w :PrevDiagnosticCycle<CR>
 " nnoremap <Leader>f <cmd>lua require'telescope.builtin'.find_files{}<CR>
 " nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
 " nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
+" nnoremap <Leader>z <cmd>lua require('telescope.builtin').lsp_workspace_symbols{}<CR>
+
 
 " neovim treesitter settings
 " --------------------------------------------------------------------
@@ -357,3 +359,5 @@ set statusline=%!StatusLine()
 " lua require('sample')
 
 " nnoremap <leader>h :lua crseven()<CR>
+
+" autocmd TextChanged,TextChangedI <buffer> write
