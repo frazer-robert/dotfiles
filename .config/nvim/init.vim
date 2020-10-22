@@ -13,26 +13,19 @@ call plug#begin('~/.vim/plugged')
 
 Plug '/usr/local/opt/fzf'
 Plug 'SirVer/ultisnips'
-Plug 'ap/vim-css-color'
 Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'justinmk/vim-sneak'
 Plug 'mustache/vim-mustache-handlebars'
-Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
-Plug 'vim-ruby/vim-ruby'
 Plug 'w0rp/ale'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-lua/diagnostic-nvim'
-Plug 'nvim-lua/popup.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-lua/telescope.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'prettier/vim-prettier', {
   \   'do': 'yarn install',
@@ -61,7 +54,6 @@ set number                                              " Show hybridline number
 set nohlsearch                                          " search highlight
 set noswapfile                                          " do not create swap files
 set spelllang=en_us                                     " set spellcheck
-" set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
 set cursorline                                          " show cursor line
 set mouse=a                                             " enable scrolling with mouse
 
@@ -126,9 +118,6 @@ noremap <silent> zl zL
 " quickfix navigation
 noremap <silent> ]q :cnext<CR>
 noremap <silent> [q :cprevious<CR>
-
-" noremap <silent> ]q :cnext<CR>
-" noremap <silent> [q :cprevious<CR>
 
 " map H and L for tab switching
 nnoremap H gT
