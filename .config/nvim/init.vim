@@ -61,7 +61,7 @@ set number                                              " Show hybridline number
 set nohlsearch                                          " search highlight
 set noswapfile                                          " do not create swap files
 set spelllang=en_us                                     " set spellcheck
-set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
+" set formatprg=par\ -w80ej                               " set par as default formatter and format the text to a text width of 80 chars, removes superflues lines (e), and justify the text (j)
 set cursorline                                          " show cursor line
 set mouse=a                                             " enable scrolling with mouse
 
@@ -75,6 +75,9 @@ filetype plugin indent on
 
 " ruby settings
 " autocmd FileType ruby nnoremap <silent> gd <C-]>
+
+" markdown settings
+au BufRead,BufNewFile *.md setlocal textwidth=80
 
 " color settings
 " override colorsheme - must be before setting colorsheme
@@ -141,6 +144,15 @@ noremap <silent> <leader>c :set cursorline!<CR>
 " retain visual selection on indent
 vnoremap > >gv
 vnoremap < <gv
+
+" --------------------------------------------------------------------
+" STATUS LINE SETTINGS
+" --------------------------------------------------------------------
+function! StatusLine()
+    return luaeval("require'status-line'.statusLine()")
+endfunction
+
+set statusline=%!StatusLine()
 
 " --------------------------------------------------------------------
 " OTHER SETTINGS
@@ -296,6 +308,7 @@ lua << EOF
   nvim_lsp.clangd.setup{}
   require'nvim_lsp'.rust_analyzer.setup{}
   nvim_lsp.jdtls.setup{}
+  nvim_lsp.jedi_language_server.setup{}
 EOF
 
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
@@ -348,16 +361,3 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-" status line settings
-" --------------------------------------------------------------------
-function! StatusLine()
-    return luaeval("require'status-line'.statusLine()")
-endfunction
-
-set statusline=%!StatusLine()
-
-" lua require('sample')
-
-" nnoremap <leader>h :lua crseven()<CR>
-
-" autocmd TextChanged,TextChangedI <buffer> write

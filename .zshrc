@@ -101,23 +101,25 @@ export LANG=en_US.UTF-8
 export PATH="/usr/local/mysql/bin:$PATH"
 
 # aliases
+alias alacritty='vi ~/.alacritty.yml'
+alias delta.conf='vi ~/.delta.conf'
 alias df='dotfiles' 
+alias fs='cd /Users/elelango/Documents/dev/freshsales'
+alias gitconfig='vi ~/.gitconfig'
+alias il='vi ~/.config/nvim/init.lua'
+alias iv='vi ~/.config/nvim/init.vim'
 alias mux='tmuxinator'
+alias note='cd ~/.notes && vi'
+alias pii='vi ~/.pii/pii.md'
+alias tmux.conf='vi ~/.tmux.conf'
 alias vi='nvim'
 alias vif='vi $(fzf)'
 alias zshrc='vi ~/.zshrc'
-alias il='vi ~/.config/nvim/init.lua'
-alias iv='vi ~/.config/nvim/init.vim'
-alias gitconfig='vi ~/.gitconfig'
-alias tmux.conf='vi ~/.tmux.conf'
-alias delta.conf='vi ~/.delta.conf'
-alias alacritty='vi ~/.alacritty.yml'
-alias note='cd ~/.notes && vi'
 
 alias cdf='cd $(fd -t d | fzf)'
 
 # git aliases
-alias gc='git checkout'
+alias gcs='git checkout staging'
 alias gcos='git checkout origin/staging' 
 alias grf='git checkout origin/staging $(fzf)' 
 alias gl='git pull'
