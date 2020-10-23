@@ -1,4 +1,4 @@
-# if [ "$TMUX" = "" ]; then tmux; fi
+if [ "$TMUX" = "" ]; then TERM=xterm-256color tmux; fi
 
 # Turn off all beeps
 unsetopt BEEP
@@ -6,69 +6,54 @@ unsetopt BEEP
 bindkey -v
 export KEYTIMEOUT=1
 
-# User configuration
+# open config/files aliases
+alias alacritty='vi ~/.alacritty.yml'
+alias delta.conf='vi ~/.delta.conf'
+alias gitconfig='vi ~/.gitconfig'
+alias il='vi ~/.config/nvim/init.lua'
+alias iv='vi ~/.config/nvim/init.vim'
+alias note='cd ~/.notes && vi'
+alias pii='vi ~/.pii/pii.md'
+alias tmux.conf='vi ~/.tmux.conf'
+alias zshrc='vi ~/.zshrc'
 
-# You may need to manually set your language environment
+# shorthand aliases
+alias cdf='cd $(fd -t d | fzf)'
+alias fs='cd /Users/elelango/Documents/dev/freshsales'
+alias mux='tmuxinator'
+alias vi='nvim'
+alias vif='vi $(fzf)'
+alias tmux='TERM=xterm-256color tmux'
+
+# git aliases
+alias gc='git commit'
+alias gcos='git checkout origin/staging' 
+alias gcs='git checkout staging'
+alias gd='git diff'
+alias gl='git pull'
+alias glo='git pull origin'
+alias glos='git pull origin staging'
+alias gp='git push'
+alias gpo='git push origin'
+alias grf='git checkout origin/staging $(fzf)' 
+alias gs='git stash --include-untracked'
+alias gsp='git stash pop'
+alias gst='git status'
+
+# dotfiles bare repo alises
+alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# default editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# language environment
 export EDITOR='nvim'
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 # export mysql@5.7.28
 export PATH="/usr/local/mysql/bin:$PATH"
-
-# aliases
-alias alacritty='vi ~/.alacritty.yml'
-alias delta.conf='vi ~/.delta.conf'
-alias df='dotfiles' 
-alias fs='cd /Users/elelango/Documents/dev/freshsales'
-alias gitconfig='vi ~/.gitconfig'
-alias il='vi ~/.config/nvim/init.lua'
-alias iv='vi ~/.config/nvim/init.vim'
-alias mux='tmuxinator'
-alias note='cd ~/.notes && vi'
-alias pii='vi ~/.pii/pii.md'
-alias tmux.conf='vi ~/.tmux.conf'
-alias vi='nvim'
-alias vif='vi $(fzf)'
-alias zshrc='vi ~/.zshrc'
-
-alias cdf='cd $(fd -t d | fzf)'
-
-# git aliases
-alias gcs='git checkout staging'
-alias gcos='git checkout origin/staging' 
-alias grf='git checkout origin/staging $(fzf)' 
-alias gl='git pull'
-alias glo='git pull origin'
-alias glos='git pull origin staging'
-alias gp='git push'
-alias gpo='git push origin'
-alias gs='git stash --include-untracked'
-alias gsp='git stash pop'
-alias gst='git status'
-alias gd='git diff'
-alias gc='git commit'
-
-# .files repo alises
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-
-# alacritty required screen-256 and overrides xterm
-alias tmux='TERM=xterm-256color tmux'
-
-export EDITOR="nvim"
-export VISUAL="nvim"
-
-# Load version control information
-autoload -Uz vcs_info
-precmd() { vcs_info }
-
-# Format the vcs_info_msg_0_ variable
-zstyle ':vcs_info:git:*' formats '(%b) '
-
-setopt PROMPT_SUBST
-PROMPT='%F{magenta}$ %1~%f %F{cyan}${vcs_info_msg_0_}%f'
-
-# enable fzf autocomplete feature
 
 # make fzf use output of rg --files
 export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --glob '!.git'"
@@ -77,9 +62,10 @@ export JAVA_HOME="/usr/libexec/java_home -v 1.8.0_192"
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="/usr/local/opt/llvm/bin:$PATH"
 
-# use fzf for history search
+# enable fzf autocomplete feature
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# shims for lazy-loading
 nvm() {
   unfunction "$0"
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -116,5 +102,19 @@ ember() {
   ember "$@"
 }
 
+# Load version control information
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '(%b) '
+
+# set prompt style
+setopt PROMPT_SUBST
+PROMPT='%F{magenta}$ %1~%f %F{cyan}${vcs_info_msg_0_}%f'
+
+# auto suggestions plugin
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# syntax highlighting plugin
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
