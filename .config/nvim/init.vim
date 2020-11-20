@@ -40,6 +40,8 @@ let mapleader = ";"                                     " set leader to ,
 set nowrap                                              " do not wrap long lines
 set hidden                                              " buffers stay alive
 set linespace=3                                         " add space between lines in Gvim
+set ignorecase                                          " case insensitive search
+set smartcase                                           " but sensitive if uppercase is used
 set clipboard=unnamedplus                               " sync with system clipboard
 set laststatus=2                                        " show status line always
 set noshowmode                                          " don't show mode status in bottom
@@ -57,6 +59,7 @@ set noswapfile                                          " do not create swap fil
 set spelllang=en_us                                     " set spellcheck
 set cursorline                                          " show cursor line
 set mouse=a                                             " enable scrolling with mouse
+set textwidth=80                                        " default text width to 80
 
 " performance optimization settings
 syntax sync minlines=256                                " limit syntax highlighting for lines
@@ -67,7 +70,7 @@ set lazyredraw                                          " lazy redraw for perfor
 filetype plugin indent on
 
 " ruby settings
-" autocmd FileType ruby nnoremap <silent> gd <C-]>
+autocmd FileType ruby nnoremap <silent> gd <C-]>zz
 
 " markdown settings
 au BufRead,BufNewFile *.md setlocal textwidth=80
@@ -180,6 +183,8 @@ nnoremap <silent> <leader>f :Files<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 nnoremap <silent> <leader>d :Buffers<CR>
 nnoremap <silent> <leader>l :Lines<CR>
+" search in dir of currently viewing file
+nnoremap <silent> <leader>g :Files %:p:h<CR>
 
 " tags used by fzf
 let g:fzf_tags_command = 'ctags -R --exclude=@.ctagsignore .'
@@ -215,7 +220,7 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 nnoremap <silent> <leader><leader>f :RG!<CR>
 
 " Rg word under cursor and fzf
-nnoremap <silent> <leader>z yiw:Rgfzf <C-R>"<CR>
+nnoremap <silent> <leader>z yiw:Rgfzf! <C-R>"<CR>
 
 " what is this
 set rtp+=~/.fzf
@@ -223,7 +228,7 @@ set rtp+=~/.fzf
 " netrw settings
 " --------------------------------------------------------------------
 let g:netrw_liststyle = 3
-let g:netrw_banner = 0
+" let g:netrw_banner = 0
 let g:netrw_browse_split = 1
 let g:netrw_winsize = 20
 let g:netrw_altv = 1
@@ -238,15 +243,17 @@ noremap <silent> <leader>a :A<CR>
 let g:ale_linters = {
   \ 'ruby': ['rubocop'],
   \ 'javascript': ['eslint'],
+  \ 'rust': ['cargo'],
   \ }
 
 let g:ale_linters_explicit = 1                          " Only run linters named in ale_linters settings.
-
-let g:ale_java_javac_sourcepath = 'src'                 " set source path for java files
+let g:ale_rust_cargo_use_clippy = 1                     " use cargo clippy instead of cargo check
+" let g:ale_java_javac_sourcepath = 'src'                 " set source path for java files
 
 let g:ale_fixers = {
   \ 'ruby': ['rubocop'],
   \ 'javascript': ['eslint'],
+  \ 'rust': ['rustfmt'],
   \ }
 
 " prettier first and then fix lint
@@ -293,7 +300,6 @@ endfunction
 lua << EOF
   local nvim_lsp = require'nvim_lsp'
   nvim_lsp.sumneko_lua.setup{}
-  nvim_lsp.solargraph.setup{}
   nvim_lsp.tsserver.setup{}
   nvim_lsp.clangd.setup{}
   require'nvim_lsp'.rust_analyzer.setup{}

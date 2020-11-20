@@ -1,0 +1,45 @@
+# /Users/elelango/.config/tmuxinator/fs.yml
+name: fs
+root: ~/Documents/dev/freshsales
+
+startup_window: editor
+
+windows:
+
+  - servers:
+      layout: d058,272x59,0,0{136x59,0,0,0,135x59,137,0,1}
+      panes:
+        - rails s
+        - sidekiq:
+            - bundle exec sidekiq 
+
+  - editor:
+      layout: 51a4,214x49,0,0{119x49,0,0,2,94x49,120,0[94x36,120,0,6,94x12,120,37,8]}
+      panes:
+        - vi:
+            - vi
+        - memcached& 
+        - ember:  
+            - cd frontend
+            - ember build --watch
+
+  - vi-split:
+      layout: d058,272x59,0,0{136x59,0,0,0,135x59,137,0,1}
+      panes:
+        - vi:
+            - vi
+        - 
+
+  - more_servers:
+      layout: 2682,272x59,0,0{136x59,0,0,2,135x59,137,0[135x18,137,0,3,135x22,137,19,5,135x17,137,42,4]}
+      panes:
+        - 
+        - redis:  
+            - redis-cli shutdown
+            - redis-server
+        - watch:  
+            - cd frontend
+            - npm run watch-yml 
+        - elasticsearch:
+            - ../elasticsearch/bin/elasticsearch
+

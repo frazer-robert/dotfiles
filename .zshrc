@@ -3,8 +3,17 @@ if [ "$TMUX" = "" ]; then TERM=xterm-256color tmux; fi
 # Turn off all beeps
 unsetopt BEEP
 
+# vim mode
 bindkey -v
 export KEYTIMEOUT=1
+
+# set history file
+export HISTFILE=~/.zsh_history
+# ignore saving duplicates to zsh history
+setopt HIST_IGNORE_ALL_DUPS
+
+# set default pager
+export PAGER=less
 
 # open config/files aliases
 alias alacritty='vi ~/.alacritty.yml'
@@ -12,8 +21,8 @@ alias delta.conf='vi ~/.delta.conf'
 alias gitconfig='vi ~/.gitconfig'
 alias il='vi ~/.config/nvim/init.lua'
 alias iv='vi ~/.config/nvim/init.vim'
-alias note='cd ~/.notes && vi'
-alias pii='vi ~/.pii/pii.md'
+alias note='cd ~/notes/; vi'
+alias info='cd ~/info/; vi'
 alias tmux.conf='vi ~/.tmux.conf'
 alias zshrc='vi ~/.zshrc'
 
@@ -25,11 +34,17 @@ alias vi='nvim'
 alias vif='vi $(fzf)'
 alias tmux='TERM=xterm-256color tmux'
 
+# cargo aliases
+alias cru='cargo run'
+alias cch='cargo check'
+alias cte='cargo test'
+
 # git aliases
 alias gc='git commit'
 alias gcos='git checkout origin/staging' 
 alias gcs='git checkout staging'
 alias gd='git diff'
+alias gdh='git diff HEAD'
 alias gl='git pull'
 alias glo='git pull origin'
 alias glos='git pull origin staging'
@@ -102,6 +117,11 @@ ember() {
   ember "$@"
 }
 
+# enable completion feature
+ci() {
+  autoload -Uz compinit && compinit
+}
+
 # Load version control information
 autoload -Uz vcs_info
 precmd() { vcs_info }
@@ -111,10 +131,9 @@ zstyle ':vcs_info:git:*' formats '(%b) '
 
 # set prompt style
 setopt PROMPT_SUBST
-PROMPT='%F{magenta}$ %1~%f %F{cyan}${vcs_info_msg_0_}%f'
+PROMPT='%(?.%F{green}.%F{red})$%f%F{magenta} %1~%f %F{cyan}${vcs_info_msg_0_}%f'
 
 # auto suggestions plugin
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # syntax highlighting plugin
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
