@@ -1,0 +1,6 @@
+snippet log "log" b
+Rails.logger.info "$1\n"
+endsnippet
+snippet logv "log value" b
+Rails.logger.info "${1:var}: #{${2:var}}\n"
+endsnippet
