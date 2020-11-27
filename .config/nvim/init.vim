@@ -26,7 +26,6 @@ Plug 'tpope/vim-rails'
 Plug 'w0rp/ale'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
-Plug 'nvim-lua/diagnostic-nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'prettier/vim-prettier', {
   \   'do': 'yarn install',
@@ -298,13 +297,13 @@ endfunction
 " neovim lsp
 " --------------------------------------------------------------------
 lua << EOF
-  local nvim_lsp = require'nvim_lsp'
-  nvim_lsp.sumneko_lua.setup{}
-  nvim_lsp.tsserver.setup{}
-  nvim_lsp.clangd.setup{}
-  require'nvim_lsp'.rust_analyzer.setup{}
-  nvim_lsp.jdtls.setup{}
-  nvim_lsp.jedi_language_server.setup{}
+  local lsp = require'lspconfig'
+  lsp.sumneko_lua.setup{}
+  lsp.tsserver.setup{}
+  lsp.clangd.setup{}
+  lsp.rust_analyzer.setup{}
+  lsp.jdtls.setup{}
+  lsp.jedi_language_server.setup{}
 EOF
 
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
@@ -331,7 +330,7 @@ let g:completion_enable_snippet = 'UltiSnips'           " show untisnippets in c
 
 " neovim diagnostics settings
 " --------------------------------------------------------------------
-autocmd BufEnter * lua require'diagnostic'.on_attach()
+" autocmd BufEnter * lua require'diagnostic'.on_attach()
 let g:diagnostic_insert_delay = 1                       " don't show diagnostics on insert mode
 
 " cycle through diagnostics

@@ -117,6 +117,12 @@ ember() {
   ember "$@"
 }
 
+git() {
+  unfunction "$0"
+  ci
+  git "$@"
+}
+
 # enable completion feature
 ci() {
   autoload -Uz compinit && compinit

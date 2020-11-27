@@ -25,6 +25,8 @@ let mapleader = ";"                                     " set leader to ,
 set nowrap                                              " do not wrap long lines
 set hidden                                              " buffers stay alive
 set laststatus=2                                        " show status line always
+set ignorecase                                          " case insensitive search
+set smartcase                                           " but sensitive if uppercase is used
 set noshowmode                                          " don't show mode status in bottom
 set shortmess+=F                                        " don't show filename o startup
 set encoding=utf-8                                      " use UTF-8 encoding internally
