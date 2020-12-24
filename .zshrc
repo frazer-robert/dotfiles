@@ -33,6 +33,7 @@ alias mux='tmuxinator'
 alias vi='nvim'
 alias vif='vi $(fzf)'
 alias tmux='TERM=xterm-256color tmux'
+alias vic='vi --clean'
 
 # cargo aliases
 alias cru='cargo run'
@@ -54,6 +55,10 @@ alias grf='git checkout origin/staging $(fzf)'
 alias gs='git stash --include-untracked'
 alias gsp='git stash pop'
 alias gst='git status'
+alias grh='git reset --hard'
+alias gcl='git clean -fd'
+alias gbs='git cherry-pick -n bs; git reset;'
+alias rmerge='git merge staging; git push -u origin HEAD;'
 
 # dotfiles bare repo alises
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
@@ -76,6 +81,7 @@ export NVM_DIR="$HOME/.nvm"
 export JAVA_HOME="/usr/libexec/java_home -v 1.8.0_192"
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="/usr/local/opt/llvm/bin:$PATH"
+export PATH="$HOME/git-fuzzy/bin:$PATH"
 
 # enable fzf autocomplete feature
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -123,7 +129,7 @@ git() {
   git "$@"
 }
 
-# enable completion feature
+# enable context aware completion feature
 ci() {
   autoload -Uz compinit && compinit
 }

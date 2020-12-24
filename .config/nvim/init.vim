@@ -111,23 +111,23 @@ end
 nnoremap <silent> <leader>n :set relativenumber!<CR>
 
 " scroll vertically easily
-noremap <silent> zj 10<C-y>z
-noremap <silent> zk 10<C-e>z
+nnoremap <silent> zj 10<C-y>
+nnoremap <silent> zk 10<C-e>
 
 " scroll horizontal easily
-noremap <silent> zh zH
-noremap <silent> zl zL
+nnoremap <silent> zh zH
+nnoremap <silent> zl zL
 
 " quickfix navigation
-noremap <silent> ]q :cnext<CR>
-noremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [q :cprevious<CR>
 
 " map H and L for tab switching
 nnoremap H gT
 nnoremap L gt
 
 " toggle cursorline
-noremap <silent> <leader>c :set cursorline!<CR>
+nnoremap <silent> <leader>c :set cursorline!<CR>
 
 " --------------------------------------------------------------------
 " VISUAL MODE KEYBINDINGS - NATIVE
@@ -136,6 +136,13 @@ noremap <silent> <leader>c :set cursorline!<CR>
 " retain visual selection on indent
 vnoremap > >gv
 vnoremap < <gv
+
+" --------------------------------------------------------------------
+" CUSTOM COMMANDS NATIVE
+" --------------------------------------------------------------------
+" create a file in opened file directory
+:command! -nargs=1 E :e %:h/<args>
+
 
 " --------------------------------------------------------------------
 " STATUS LINE SETTINGS
@@ -161,18 +168,17 @@ nnoremap <silent> <leader>q wy$:exe "!tmux send -t 1 'qq\b\bclear; git diff --st
 
 " vim-fugitive key bindings
 " --------------------------------------------------------------------
-nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>gd :Gstatus<CR>
 nnoremap <silent> <leader>ga :Gwrite<CR>
 nnoremap <silent> <leader>gc :Gcommit<CR>
 nnoremap <silent> <leader>gb :Gblame<CR>
-nnoremap <silent> <leader>gd :Gdiff<CR>
 nnoremap <silent> <leader>gl :Glog<CR>
 nnoremap <silent> <leader>gr :0Glog<CR>
 
 
 " vim-commentary settings
 " --------------------------------------------------------------------
-noremap <silent> \ :Commentary<CR>
+nnoremap <silent> \ :Commentary<CR>
 autocmd FileType ruby setlocal commentstring=#\ %s
 
 " FZF settings
@@ -183,7 +189,7 @@ nnoremap <silent> <leader>t :Tags<CR>
 nnoremap <silent> <leader>d :Buffers<CR>
 nnoremap <silent> <leader>l :Lines<CR>
 " search in dir of currently viewing file
-nnoremap <silent> <leader>g :Files %:p:h<CR>
+nnoremap <silent> <leader>h :Files %:p:h<CR>
 
 " tags used by fzf
 let g:fzf_tags_command = 'ctags -R --exclude=@.ctagsignore .'
@@ -221,8 +227,15 @@ nnoremap <silent> <leader><leader>f :RG!<CR>
 " Rg word under cursor and fzf
 nnoremap <silent> <leader>z yiw:Rgfzf! <C-R>"<CR>
 
-" what is this
-set rtp+=~/.fzf
+" stage unstage interactively with fzf
+command! -bang -nargs=? -complete=dir GFiles
+    \ call fzf#vim#gitfiles(<q-args>, {'options': 
+    \ ['--layout', 'reverse',
+    \  '--preview-window', 'right:75%',
+    \  '--preview', 'git diff HEAD {-1} | delta --file-style=omit | sed 1d',
+    \  '--bind', 'ctrl-s:execute-silent($HOME/config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)']}, <bang>0)
+
+nnoremap <silent> <leader>gs :GF!?<CR>
 
 " netrw settings
 " --------------------------------------------------------------------
@@ -234,8 +247,8 @@ let g:netrw_altv = 1
 
 " vim-rails settings
 " --------------------------------------------------------------------
-noremap <silent> <leader>r :R<CR>
-noremap <silent> <leader>a :A<CR>
+nnoremap <silent> <leader>r :R<CR>
+nnoremap <silent> <leader>a :A<CR>
 
 " ale linter settings
 " --------------------------------------------------------------------
@@ -256,7 +269,7 @@ let g:ale_fixers = {
   \ }
 
 " prettier first and then fix lint
-noremap <silent> <leader>p :Prettier<CR>:ALEFix<CR>
+nnoremap <silent> <leader>p :Prettier<CR>:ALEFix<CR>
 
 " fix lint on save
 " let g:ale_fix_on_save = 1
@@ -298,11 +311,10 @@ endfunction
 " --------------------------------------------------------------------
 lua << EOF
   local lsp = require'lspconfig'
-  lsp.sumneko_lua.setup{}
+  lsp.html.setup{}
   lsp.tsserver.setup{}
   lsp.clangd.setup{}
   lsp.rust_analyzer.setup{}
-  lsp.jdtls.setup{}
   lsp.jedi_language_server.setup{}
 EOF
 
@@ -330,12 +342,20 @@ let g:completion_enable_snippet = 'UltiSnips'           " show untisnippets in c
 
 " neovim diagnostics settings
 " --------------------------------------------------------------------
-" autocmd BufEnter * lua require'diagnostic'.on_attach()
-let g:diagnostic_insert_delay = 1                       " don't show diagnostics on insert mode
 
 " cycle through diagnostics
-noremap <silent> ]w :NextDiagnosticCycle<CR>
-noremap <silent> [w :PrevDiagnosticCycle<CR>
+nnoremap <silent> ]w <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap <silent> [w <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+
+lua << EOF
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = false,
+    signs = true,
+    update_in_insert = false,
+  }
+)
+EOF
 
 " neovim telescope settings
 " --------------------------------------------------------------------
@@ -343,7 +363,6 @@ noremap <silent> [w :PrevDiagnosticCycle<CR>
 " nnoremap <Leader><Leader>f <cmd>lua require('telescope.builtin').live_grep{}<CR>
 " nnoremap <Leader>d <cmd>lua require('telescope.builtin').buffers{}<CR>
 " nnoremap <Leader>z <cmd>lua require('telescope.builtin').lsp_workspace_symbols{}<CR>
-
 
 " neovim treesitter settings
 " --------------------------------------------------------------------

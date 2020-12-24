@@ -17,6 +17,7 @@ windows:
       layout: 51a4,214x49,0,0{119x49,0,0,2,94x49,120,0[94x36,120,0,6,94x12,120,37,8]}
       panes:
         - vi:
+            - rbenv
             - vi
         - memcached& 
         - ember:  
@@ -27,6 +28,7 @@ windows:
       layout: d058,272x59,0,0{136x59,0,0,0,135x59,137,0,1}
       panes:
         - vi:
+            - rbenv
             - vi
         - 
 
