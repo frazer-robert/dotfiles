@@ -69,7 +69,8 @@ stage () {
           --reverse \
           --preview-window 'right:75%' \
           --preview 'git diff HEAD {-1} | delta --file-style=omit | sed 1d' \
-          --bind 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)'
+          --bind 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)' \
+          --bind 'ctrl-c:execute(git commit)+reload(git -c color.status=always status --short --untracked-files=all)'
 }
 
 # dotfiles bare repo alises

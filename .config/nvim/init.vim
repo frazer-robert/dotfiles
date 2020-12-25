@@ -191,6 +191,7 @@ nnoremap <silent> <leader>gb :Gblame<CR>
 nnoremap <silent> <leader>gl :Glog<CR>
 nnoremap <silent> <leader>gr :0Glog<CR>
 
+:command! Gc :Gcommit
 
 " vim-commentary settings
 " --------------------------------------------------------------------
