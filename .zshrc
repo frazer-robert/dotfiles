@@ -60,6 +60,18 @@ alias gcl='git clean -fd'
 alias gbs='git cherry-pick -n bs; git reset;'
 alias rmerge='git merge staging; git push -u origin HEAD;'
 
+stage () {
+  git -c color.status=always status \
+    --short \
+    --untracked-files=all | 
+      fzf \
+          --ansi \
+          --reverse \
+          --preview-window 'right:75%' \
+          --preview 'git diff HEAD {-1} | delta --file-style=omit | sed 1d' \
+          --bind 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)'
+}
+
 # dotfiles bare repo alises
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
@@ -87,50 +99,50 @@ export PATH="$HOME/git-fuzzy/bin:$PATH"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # shims for lazy-loading
-nvm() {
+nvm () {
   unfunction "$0"
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
   nvm "$@"
 }
 
-rbenv() {
+rbenv () {
   unfunction "$0"
   eval "$(command rbenv init -)"
   rbenv "$@"
 }
 
-rails() {
+rails () {
   unfunction "$0"
   rbenv
   rails "$@"
 }
 
-rake() {
+rake () {
   unfunction "$0"
   rbenv
   rake "$@"
 }
 
-bundle() {
+bundle () {
   unfunction "$0"
   rbenv
   bundle "$@"
 }
 
-ember() {
+ember () {
   unfunction "$0"
   nvm
   ember "$@"
 }
 
-git() {
+git () {
   unfunction "$0"
   ci
   git "$@"
 }
 
 # enable context aware completion feature
-ci() {
+ci () {
   autoload -Uz compinit && compinit
 }
 

@@ -27,6 +27,7 @@ Plug 'w0rp/ale'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'junegunn/seoul256.vim'
 Plug 'prettier/vim-prettier', {
   \   'do': 'yarn install',
   \   'branch': 'release/1.x'
@@ -74,7 +75,9 @@ autocmd FileType ruby nnoremap <silent> gd <C-]>zz
 " markdown settings
 au BufRead,BufNewFile *.md setlocal textwidth=80
 
-" color settings
+" --------------------------------------------------------------------
+" COLOR SETTINGS
+" --------------------------------------------------------------------
 " override colorsheme - must be before setting colorsheme
 autocmd ColorScheme onehalfdark highlight Normal guibg=#1d1f21
 autocmd ColorScheme onehalfdark highlight CursorLine guibg=#26292e
@@ -84,18 +87,31 @@ autocmd ColorScheme onehalfdark highlight LineNr guifg=#555555
 
 syntax enable                                           " enable syntax higlighting
 set background=dark                                     " inform vim of dark background
+highlight Comment cterm=italic gui=italic
+
+" handling setting and unsetting BAT_THEME for fzf.vim
+augroup update_bat_theme
+    autocmd!
+    autocmd colorscheme * call ToggleBatEnvVar()
+augroup end
+
+function ToggleBatEnvVar()
+    if (&background == "light")
+        let $BAT_THEME='Solarized (light)'
+    else
+        let $BAT_THEME='TwoDark'
+    endif
+endfunction
 
 :let theme = 'onehalfdark'                              " set colorscheme name here
 :exe 'colorscheme ' g:theme
 
-highlight Comment cterm=italic gui=italic
-
 " additional color settings
-if (has("termguicolors"))
+if has("termguicolors")
   set termguicolors
 endif
 
-if (has("nvim"))
+if has("nvim")
   let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 endif
 
@@ -178,19 +194,11 @@ nnoremap <silent> <leader>gr :0Glog<CR>
 
 " vim-commentary settings
 " --------------------------------------------------------------------
-nnoremap <silent> \ :Commentary<CR>
+noremap <silent> \ :Commentary<CR>
 autocmd FileType ruby setlocal commentstring=#\ %s
 
 " FZF settings
 " --------------------------------------------------------------------
-nnoremap <silent> <leader>gf :GFiles<CR>
-nnoremap <silent> <leader>f :Files<CR>
-nnoremap <silent> <leader>t :Tags<CR>
-nnoremap <silent> <leader>d :Buffers<CR>
-nnoremap <silent> <leader>l :Lines<CR>
-" search in dir of currently viewing file
-nnoremap <silent> <leader>h :Files %:p:h<CR>
-
 " tags used by fzf
 let g:fzf_tags_command = 'ctags -R --exclude=@.ctagsignore .'
 
@@ -201,22 +209,29 @@ let g:fzf_action = {
   \ 'ctrl-v': 'vsplit'
   \ }
 
-" Rg and then FZF
-command! -bang -nargs=* Rgfzf
-  \ call fzf#vim#grep(
-  \   'rg --trim --column --line-number --hidden --ignore-case --no-heading --color=always '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
-  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'right:50%:hidden', '?'),
-  \   <bang>0)
+" respect vim colorscheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
 
-" Interactive RG
-function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-  let initial_command = printf(command_fmt, shellescape(a:query))
-  let reload_command = printf(command_fmt, '{q}')
-  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-endfunction
+nnoremap <silent> <leader>gf :GFiles<CR>
+nnoremap <silent> <leader>f :Files<CR>
+nnoremap <silent> <leader>t :Tags<CR>
+nnoremap <silent> <leader>d :Buffers<CR>
+nnoremap <silent> <leader>l :Lines<CR>
+" search in dir of currently viewing file
+nnoremap <silent> <leader>h :Files %:p:h<CR>
 
 " open interactive RG
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
@@ -227,13 +242,22 @@ nnoremap <silent> <leader><leader>f :RG!<CR>
 " Rg word under cursor and fzf
 nnoremap <silent> <leader>z yiw:Rgfzf! <C-R>"<CR>
 
+" Interactive RG
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
 " stage unstage interactively with fzf
 command! -bang -nargs=? -complete=dir GFiles
     \ call fzf#vim#gitfiles(<q-args>, {'options': 
     \ ['--layout', 'reverse',
     \  '--preview-window', 'right:75%',
     \  '--preview', 'git diff HEAD {-1} | delta --file-style=omit | sed 1d',
-    \  '--bind', 'ctrl-s:execute-silent($HOME/config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)']}, <bang>0)
+    \  '--bind', 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)']}, <bang>0)
 
 nnoremap <silent> <leader>gs :GF!?<CR>
 
