@@ -57,7 +57,7 @@ alias gsp='git stash pop'
 alias gst='git status'
 alias grh='git reset --hard'
 alias gcl='git clean -fd'
-alias gbs='git cherry-pick -n bs; git reset;'
+alias gbs='git clean -f; git reset --hard; git cherry-pick -n bs; git reset;'
 alias rmerge='git merge staging; git push -u origin HEAD;'
 
 stage () {
@@ -67,9 +67,17 @@ stage () {
       fzf \
           --ansi \
           --reverse \
-          --preview-window 'right:75%' \
-          --preview 'git diff HEAD {-1} | delta --file-style=omit | sed 1d' \
+          --cycle \
+          --preview-window 'right:70%' \
+          --preview 'bash -c "
+            if [[ {1} =~ \? ]]; then
+              git diff /dev/null {-1} | delta --file-style=omit | sed 1d;
+            else
+              git diff HEAD -- {-1} | delta --file-style=omit | sed 1d;
+            fi
+          "' \
           --bind 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)' \
+          --bind 'ctrl-x:execute-silent($HOME/.config/nvim/grm.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)' \
           --bind 'ctrl-c:execute(git commit)+reload(git -c color.status=always status --short --untracked-files=all)'
 }
 

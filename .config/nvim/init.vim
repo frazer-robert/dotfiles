@@ -6,7 +6,7 @@ set nocompatible
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  au VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
@@ -59,7 +59,6 @@ set noswapfile                                          " do not create swap fil
 set spelllang=en_us                                     " set spellcheck
 set cursorline                                          " show cursor line
 set mouse=a                                             " enable scrolling with mouse
-set textwidth=80                                        " default text width to 80
 
 " performance optimization settings
 syntax sync minlines=256                                " limit syntax highlighting for lines
@@ -70,20 +69,18 @@ set lazyredraw                                          " lazy redraw for perfor
 filetype plugin indent on
 
 " ruby settings
-autocmd FileType ruby nnoremap <silent> gd <C-]>zz
+au FileType ruby nnoremap <silent> gd <C-]>zz
 
 " markdown settings
-au BufRead,BufNewFile *.md setlocal textwidth=80
+augroup markdown
+  au FileType markdown setlocal textwidth=80
+  au BufWinEnter *.md exe WM
+  " au BufHidden *.md call SwitchCodeMode()
+augroup end
 
 " --------------------------------------------------------------------
 " COLOR SETTINGS
 " --------------------------------------------------------------------
-" override colorsheme - must be before setting colorsheme
-autocmd ColorScheme onehalfdark highlight Normal guibg=#1d1f21
-autocmd ColorScheme onehalfdark highlight CursorLine guibg=#26292e
-autocmd ColorScheme onehalfdark highlight ColorColumn guibg=#26292b
-autocmd ColorScheme onehalfdark highlight LineNr guibg=#1d1f21
-autocmd ColorScheme onehalfdark highlight LineNr guifg=#555555
 
 syntax enable                                           " enable syntax higlighting
 set background=dark                                     " inform vim of dark background
@@ -91,8 +88,8 @@ highlight Comment cterm=italic gui=italic
 
 " handling setting and unsetting BAT_THEME for fzf.vim
 augroup update_bat_theme
-    autocmd!
-    autocmd colorscheme * call ToggleBatEnvVar()
+    au!
+    au colorscheme * call ToggleBatEnvVar()
 augroup end
 
 function ToggleBatEnvVar()
@@ -116,7 +113,7 @@ if has("nvim")
 endif
 
 if has("gui_running")
-    autocmd GUIEnter * set vb t_vb=
+    au GUIEnter * set vb t_vb=
 end
 
 " --------------------------------------------------------------------
@@ -178,15 +175,11 @@ set statusline=%!StatusLine()
 " reset file to staging version
 :command! Gcos :!git checkout origin/staging %
 
-" show file diff in tmuz pane 1
-nnoremap <silent> <leader>w wy$:exe "!tmux send -t 1 'qq\b\bclear; git diff HEAD <C-R>"' Enter"<CR><CR>
-nnoremap <silent> <leader>q wy$:exe "!tmux send -t 1 'qq\b\bclear; git diff --staged' Enter"<CR><CR>
-
 " vim-fugitive key bindings
 " --------------------------------------------------------------------
 nnoremap <silent> <leader>gd :Gstatus<CR>
 nnoremap <silent> <leader>ga :Gwrite<CR>
-nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader><leader>c :Gcommit<CR>
 nnoremap <silent> <leader>gb :Gblame<CR>
 nnoremap <silent> <leader>gl :Glog<CR>
 nnoremap <silent> <leader>gr :0Glog<CR>
@@ -196,7 +189,7 @@ nnoremap <silent> <leader>gr :0Glog<CR>
 " vim-commentary settings
 " --------------------------------------------------------------------
 noremap <silent> \ :Commentary<CR>
-autocmd FileType ruby setlocal commentstring=#\ %s
+au FileType ruby setlocal commentstring=#\ %s
 
 " FZF settings
 " --------------------------------------------------------------------
@@ -206,7 +199,6 @@ let g:fzf_tags_command = 'ctags -R --exclude=@.ctagsignore .'
 " fzf actions
 let g:fzf_action = {
   \ 'ctrl-n': 'tab split',
-  \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit'
   \ }
 
@@ -226,11 +218,13 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-nnoremap <silent> <leader>gf :GFiles<CR>
 nnoremap <silent> <leader>f :Files<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 nnoremap <silent> <leader>d :Buffers<CR>
 nnoremap <silent> <leader>l :Lines<CR>
+nnoremap <silent> <leader>gs :GF!?<CR>
+nnoremap <silent> <leader><leader>h :Commits!<CR>
+nnoremap <silent> <leader><leader>b :BCommits!<CR>
 " search in dir of currently viewing file
 nnoremap <silent> <leader>h :Files %:p:h<CR>
 
@@ -252,15 +246,29 @@ function! RipgrepFzf(query, fullscreen)
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
+" Rg and then FZF
+command! -bang -nargs=* Rgfzf
+  \ call fzf#vim#grep(
+  \   'rg --trim --column --line-number --hidden --ignore-case --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'right:50%:hidden', '?'),
+  \   <bang>0)
+
+let preview = printf(
+    \ 'bash -c "if [[ {1} =~ \? ]]; then %s; else %s; fi"',
+    \ 'git diff /dev/null {-1} | delta --file-style=omit | sed 1d',
+    \ 'git diff HEAD -- {-1} | delta --file-style=omit | sed 1d'
+    \ )
+
 " stage unstage interactively with fzf
 command! -bang -nargs=? -complete=dir GFiles
     \ call fzf#vim#gitfiles(<q-args>, {'options': 
     \ ['--layout', 'reverse',
-    \  '--preview-window', 'right:75%',
-    \  '--preview', 'git diff HEAD {-1} | delta --file-style=omit | sed 1d',
+    \  '--cycle',
+    \  '--preview-window', 'right:70%',
+    \  '--preview', preview,
+    \  '--bind', 'ctrl-x:execute-silent($HOME/.config/nvim/grm.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)',
     \  '--bind', 'ctrl-s:execute-silent($HOME/.config/nvim/gst.sh {1} {2})+reload(git -c color.status=always status --short --untracked-files=all)']}, <bang>0)
-
-nnoremap <silent> <leader>gs :GF!?<CR>
 
 " netrw settings
 " --------------------------------------------------------------------
@@ -319,7 +327,7 @@ function SwitchWriteMode()
   set background=light
   setlocal spell
   colorscheme solarized8_high
-  Goyo
+  Goyo x35
 endfunction
 
 function SwitchCodeMode()
@@ -329,8 +337,8 @@ function SwitchCodeMode()
   setlocal nospell
 endfunction
 
-" autocmd BufNewFile,BufRead *.txt,*.md :WM
-" autocmd BufUnload *.txt,*.md :CM
+" au BufNewFile,BufRead *.txt,*.md :WM
+" au BufUnload *.txt,*.md :CM
 
 " neovim lsp
 " --------------------------------------------------------------------
@@ -355,7 +363,7 @@ nnoremap <silent> gD    <cmd>lua vim.lsp.buf.declaration()<CR>
 
 " neovim completion
 " --------------------------------------------------------------------
-autocmd BufEnter * lua require'completion'.on_attach()
+au BufEnter * lua require'completion'.on_attach()
 
 " Use <Tab> and <S-Tab> to navigate through popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"

@@ -4,7 +4,7 @@ local S = {}
 local context
 local notes = io.popen("pwd"):read("*a")
 
-if string.find(notes, "/.notes") then
+if string.find(notes, "/notes") then
   context = 'notes | '
 else
   context = ''
