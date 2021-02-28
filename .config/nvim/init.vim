@@ -22,11 +22,10 @@ Plug 'mustache/vim-mustache-handlebars'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-rails'
 Plug 'w0rp/ale'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'junegunn/seoul256.vim'
 Plug 'prettier/vim-prettier', {
   \   'do': 'yarn install',
@@ -42,7 +41,6 @@ set hidden                                              " buffers stay alive
 set linespace=3                                         " add space between lines in Gvim
 set ignorecase                                          " case insensitive search
 set smartcase                                           " but sensitive if uppercase is used
-set clipboard=unnamedplus                               " sync with system clipboard
 set laststatus=2                                        " show status line always
 set noshowmode                                          " don't show mode status in bottom
 set shortmess+=F                                        " don't show filename o startup
@@ -96,11 +94,11 @@ function ToggleBatEnvVar()
     if (&background == "light")
         let $BAT_THEME='Solarized (light)'
     else
-        let $BAT_THEME='TwoDark'
+        let $BAT_THEME='gruvbox'
     endif
 endfunction
 
-:let theme = 'onehalfdark'                              " set colorscheme name here
+:let theme = 'palenight'                              " set colorscheme name here
 :exe 'colorscheme ' g:theme
 
 " additional color settings
@@ -149,6 +147,9 @@ nnoremap <silent> <leader>c :set cursorline!<CR>
 " retain visual selection on indent
 vnoremap > >gv
 vnoremap < <gv
+
+" copy contents to system clipboard while yanking
+vnoremap <silent> y "+y
 
 " --------------------------------------------------------------------
 " CUSTOM COMMANDS NATIVE
@@ -201,6 +202,9 @@ let g:fzf_action = {
   \ 'ctrl-n': 'tab split',
   \ 'ctrl-v': 'vsplit'
   \ }
+
+" default preview window settings
+let g:fzf_preview_window = ['right:60%', 'ctrl-/']
 
 " respect vim colorscheme
 let g:fzf_colors =

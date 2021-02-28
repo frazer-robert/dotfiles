@@ -7,10 +7,9 @@ unsetopt BEEP
 bindkey -v
 export KEYTIMEOUT=1
 
-# set history file
-export HISTFILE=~/.zsh_history
-# ignore saving duplicates to zsh history
-setopt HIST_IGNORE_ALL_DUPS
+export HISTFILE=~/.zsh_history                  # set history file
+setopt HIST_IGNORE_ALL_DUPS                     # ignore saving duplicates to zsh history
+
 
 # set default pager
 export PAGER=less
@@ -25,11 +24,14 @@ alias note='cd ~/notes/; vi'
 alias info='cd ~/info/; vi'
 alias tmux.conf='vi ~/.tmux.conf'
 alias zshrc='vi ~/.zshrc'
+alias src='cd ~/src'
+alias sz='source ~/.zshrc'
+alias nginx.conf='vi /usr/local/etc/nginx/nginx.conf'
 
 # shorthand aliases
 alias cdf='cd $(fd -t d | fzf)'
 alias fs='cd /Users/elelango/Documents/dev/freshsales'
-alias mux='tmuxinator'
+alias mux='TERM=xterm-256color tmuxinator'
 alias vi='nvim'
 alias vif='vi $(fzf)'
 alias tmux='TERM=xterm-256color tmux'
@@ -59,6 +61,9 @@ alias grh='git reset --hard'
 alias gcl='git clean -fd'
 alias gbs='git clean -f; git reset --hard; git cherry-pick -n bs; git reset;'
 alias rmerge='git merge staging; git push -u origin HEAD;'
+
+# ssh aliases
+alias bastion='ssh -i ~/.ssh/id_rsa app-dev-eelangofreshworksco77197@34.199.190.215'
 
 stage () {
   git -c color.status=always status \
@@ -153,6 +158,13 @@ git () {
 # enable context aware completion feature
 ci () {
   autoload -Uz compinit && compinit
+}
+
+# ruby playground
+play () {
+  cd
+  tmux split-window -v
+  watch -btn1 ruby play.rb;
 }
 
 # Load version control information
