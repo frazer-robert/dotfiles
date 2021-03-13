@@ -8,8 +8,14 @@ bindkey -v
 export KEYTIMEOUT=1
 
 export HISTFILE=~/.zsh_history                  # set history file
+setopt INC_APPEND_HISTORY                       # write to file immedieately
 setopt HIST_IGNORE_ALL_DUPS                     # ignore saving duplicates to zsh history
+setopt HIST_IGNORE_SPACE                        # Don't record an entry starting with a space.
+HISTSIZE=10000000
+SAVEHIST=10000000
 
+
+export CM_DIR=~/                  # set history file
 
 # set default pager
 export PAGER=less

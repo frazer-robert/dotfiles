@@ -1,0 +1,2 @@
+xhost +SI:localuser:root
+xbindkeys
