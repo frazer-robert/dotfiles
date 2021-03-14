@@ -114,6 +114,11 @@ if has("gui_running")
     au GUIEnter * set vb t_vb=
 end
 
+" transparent background
+hi Normal guibg=NONE ctermbg=NONE
+hi StatusLine guibg=NONE ctermbg=NONE
+hi CursorLine guibg=#1c2a2f ctermbg=NONE
+
 " --------------------------------------------------------------------
 " NORMAL MODE KEYBINDINGS - NATIVE
 " --------------------------------------------------------------------
@@ -180,7 +185,7 @@ set statusline=%!StatusLine()
 " --------------------------------------------------------------------
 nnoremap <silent> <leader>gd :Gstatus<CR>
 nnoremap <silent> <leader>ga :Gwrite<CR>
-nnoremap <silent> <leader><leader>c :Gcommit<CR>
+nnoremap <silent> <leader><leader>c :Git commit<CR>
 nnoremap <silent> <leader>gb :Gblame<CR>
 nnoremap <silent> <leader>gl :Glog<CR>
 nnoremap <silent> <leader>gr :0Glog<CR>
