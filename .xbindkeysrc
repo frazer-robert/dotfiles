@@ -2,10 +2,25 @@
     Mod4 + space
 
 "(rofi -show window -show-icons)"
-    Control + space
+    Alt + space
 
 "(CM_DIR=~/ CM_LAUNCHER=rofi CM_HISTLENGTH=16 clipmenu && xdotool key --clearmodifiers ctrl+v)"
-    Alt + space
+    Control + space
+
+"(xbacklight -inc 5)"
+    XF86MonBrightnessUp
+
+"(xbacklight -dec 5)"
+    XF86MonBrightnessDown
+
+"(pactl set-sink-volume @DEFAULT_SINK@ +5%)"
+    XF86AudioRaiseVolume
+
+"(pactl set-sink-volume @DEFAULT_SINK@ -5%)"
+    XF86AudioLowerVolume
+
+"(pactl set-sink-mute @DEFAULT_SINK@ toggle)"
+    XF86AudioMute
 
 # For the benefit of emacs users: -*- shell-script -*-
 ###########################
