@@ -1,10 +1,10 @@
-"(rofi -show drun -show-icons)"
+"(rofi -show drun -show-icons -m -4)"
     Mod4 + space
 
-"(rofi -show window -show-icons)"
+"(rofi -show window -show-icons -m -4)"
     Alt + space
 
-"(CM_DIR=~/ CM_LAUNCHER=rofi CM_HISTLENGTH=16 clipmenu && xdotool key --clearmodifiers ctrl+v)"
+"(CM_DIR=~/ CM_LAUNCHER=rofi CM_HISTLENGTH=16 clipmenu -m -4 && xdotool key --clearmodifiers ctrl+v)"
     Control + space
 
 "(xbacklight -inc 5)"

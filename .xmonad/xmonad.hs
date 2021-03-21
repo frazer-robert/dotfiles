@@ -194,34 +194,35 @@ main :: IO ()
 main = do
     xmproc0 <- spawnPipe "xmobar -x 0 $HOME/.config/xmobar/xmobarrc"
     xmproc1 <- spawnPipe "xmobar -x 1 $HOME/.config/xmobar/xmobarrc"
-    xmonad $ ewmh def
-        { manageHook = ( isFullscreen --> doFullFloat ) <+> manageDocks
+    xmonad $ ewmh def { 
+        manageHook = ( isFullscreen --> doFullFloat ) <+> manageDocks,
         -- Run xmonad commands from command line with "xmonadctl command". Commands include:
         -- shrink, expand, next-layout, default-layout, restart-wm, xterm, kill, refresh, run,
         -- focus-up, focus-down, swap-up, swap-down, swap-master, sink, quit-wm. You can run
         -- "xmonadctl 0" to generate full list of commands written to ~/.xsession-errors.
         -- To compile xmonadctl: ghc -dynamic xmonadctl.hs
-        , handleEventHook    = serverModeEventHookCmd
+         handleEventHook     = serverModeEventHookCmd
                                <+> serverModeEventHook
                                <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn)
-                               <+> docksEventHook
-        , modMask            = myModMask
-        , terminal           = myTerminal
-        , startupHook        = myStartupHook
-        , layoutHook         = myLayoutHook
-        , workspaces         = myWorkspaces
-        , borderWidth        = myBorderWidth
-        , normalBorderColor  = myNormColor
-        , focusedBorderColor = myFocusColor
-        , logHook = workspaceHistoryHook <+> dynamicLogWithPP xmobarPP
-                        { ppOutput = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x
-                        , ppCurrent = xmobarColor "#98be65" "" . wrap "[" "]"           -- Current workspace in xmobar
-                        , ppVisible = xmobarColor "#98be65" "" . clickable              -- Visible but not current workspace
-                        , ppHidden = xmobarColor "#82AAFF" "" . wrap "*" "" . clickable -- Hidden workspaces in xmobar
-                        , ppHiddenNoWindows = xmobarColor "#c792ea" ""  . clickable     -- Hidden workspaces (no windows)
-                        , ppTitle = xmobarColor "#b3afc2" "" . shorten 60               -- Title of active window in xmobar
-                        , ppSep =  "<fc=#666666> | </fc>"                               -- Separators in xmobar
-                        , ppUrgent = xmobarColor "#C45500" "" . wrap "!" "!"            -- Urgent workspace
-                        , ppOrder  = \(ws:l:t:ex) -> [ws]++ex++[t]
-                        }
-        } `additionalKeysP` myKeys
+                               <+> docksEventHook,
+          modMask            = myModMask,
+          terminal           = myTerminal,
+          startupHook        = myStartupHook,
+          layoutHook         = myLayoutHook,
+          workspaces         = myWorkspaces,
+          borderWidth        = myBorderWidth,
+          normalBorderColor  = myNormColor,
+          focusedBorderColor = myFocusColor,
+          focusFollowsMouse  = False,
+          logHook = workspaceHistoryHook <+> dynamicLogWithPP xmobarPP { 
+              ppOutput           = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x,
+              ppCurrent          = xmobarColor "#98be65" "" . wrap "[" "]",           -- Current workspace in xmobar
+              ppVisible          = xmobarColor "#98be65" "" . clickable,              -- Visible but not current workspace
+              ppHidden           = xmobarColor "#82AAFF" "" . wrap "*" "" . clickable, -- Hidden workspaces in xmobar
+              ppHiddenNoWindows  = xmobarColor "#c792ea" ""  . clickable,     -- Hidden workspaces (no windows)
+              ppTitle            = xmobarColor "#b3afc2" "" . shorten 60,               -- Title of active window in xmobar
+              ppSep              =  "<fc=#666666> | </fc>",                               -- Separators in xmobar
+              ppUrgent           = xmobarColor "#C45500" "" . wrap "!" "!",            -- Urgent workspace
+              ppOrder            = \(ws:l:t:ex) -> [ws]++ex++[t]
+         }
+    } `additionalKeysP` myKeys
