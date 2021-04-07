@@ -70,11 +70,11 @@ filetype plugin indent on
 au FileType ruby nnoremap <silent> gd <C-]>zz
 
 " markdown settings
-augroup markdown
-  au FileType markdown setlocal textwidth=80
-  au BufWinEnter *.md exe WM
-  " au BufHidden *.md call SwitchCodeMode()
-augroup end
+" augroup markdown
+"   au FileType markdown setlocal textwidth=80
+"   au BufWinEnter *.md exe WM
+"   " au BufHidden *.md call SwitchCodeMode()
+" augroup end
 
 " --------------------------------------------------------------------
 " COLOR SETTINGS
@@ -356,6 +356,7 @@ lua << EOF
   lsp.html.setup{}
   lsp.tsserver.setup{}
   lsp.clangd.setup{}
+  lsp.gopls.setup{}
   lsp.rust_analyzer.setup{}
   lsp.jedi_language_server.setup{}
 EOF
