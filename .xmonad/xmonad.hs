@@ -79,7 +79,7 @@ myStartupHook = do
           spawnOnce "nitrogen --restore &"
           spawnOnce "picom --experimental-backends &"
           spawnOnce "nm-applet &"
-          spawnOnce "trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 20 &"
+          spawnOnce "trayer --edge top --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 16 &"
 
 --Makes setting the spacingRaw simpler to write. The spacingRaw module adds a configurable amount of space around windows.
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
@@ -216,13 +216,13 @@ main = do
           focusFollowsMouse  = False,
           logHook = workspaceHistoryHook <+> dynamicLogWithPP xmobarPP { 
               ppOutput           = \x -> hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x,
-              ppCurrent          = xmobarColor "#98be65" "" . wrap "[" "]",           -- Current workspace in xmobar
-              ppVisible          = xmobarColor "#98be65" "" . clickable,              -- Visible but not current workspace
-              ppHidden           = xmobarColor "#82AAFF" "" . wrap "*" "" . clickable, -- Hidden workspaces in xmobar
-              ppHiddenNoWindows  = xmobarColor "#c792ea" ""  . clickable,     -- Hidden workspaces (no windows)
-              ppTitle            = xmobarColor "#b3afc2" "" . shorten 60,               -- Title of active window in xmobar
-              ppSep              =  "<fc=#666666> | </fc>",                               -- Separators in xmobar
+              ppCurrent          = xmobarColor "#98be65" "" . wrap "[" "]",            -- Current workspace in xmobar
+              ppVisible          = xmobarColor "#98be65" "" . clickable,               -- Visible but not current workspace
+              ppHidden           = xmobarColor "#82AAFF" "" . clickable,               -- Hidden workspaces in xmobar
+              ppHiddenNoWindows  = xmobarColor "#c792ea" ""  . clickable,              -- Hidden workspaces (no windows)
+              ppTitle            = xmobarColor "#aaaaaa" "" . shorten 60,              -- Title of active window in xmobar
+              ppSep              =  "<fc=#666666>  |  </fc>",                          -- Separators in xmobar
               ppUrgent           = xmobarColor "#C45500" "" . wrap "!" "!",            -- Urgent workspace
-              ppOrder            = \(ws:l:t:ex) -> [ws]++ex++[t]
+              ppOrder            = \(ws:_:t:_) -> [ws,t]
          }
     } `additionalKeysP` myKeys

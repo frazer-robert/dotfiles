@@ -2,7 +2,7 @@
 
 Config { font = "xft:Mononoki Nerd Font:weight=bold:pixelsize=11:antialias=true:hinting=true",
          bgColor = "#282c34",
-         fgColor = "#b3afc2",
+         fgColor = "#aaaaaa",
          position = Top,
          lowerOnStart = True,
          hideOnStart = False,
@@ -10,19 +10,21 @@ Config { font = "xft:Mononoki Nerd Font:weight=bold:pixelsize=11:antialias=true:
          persistent = True,
          sepChar = "%",
          alignSep = "}{",
-         template = " %UnsafeStdinReader% }{ %uname% | %cpu% | %memory% | %dynnetwork% |  %pacupdate% | %battery% | %date% ",
          commands = [
                       Run Date " %H:%M  %b %d %Y         " "date" 50,
 
-                      Run Cpu            ["-t", " cpu: <total>%",
-                                          "-H","50", "--high","red",
-                                          "-w", "2",
-                                          "-c", "0"
+                      Run Cpu            ["-t"          , "cpu <total>%",
+                                          "-H"          , "50",
+                                          "--high"      , "#dc143c",
+                                          "-w"          , "2",
+                                          "-c"          , "0"
                                          ] 20,
 
-                      Run Memory         ["-t", " mem: <used>M ",
-                                          "-w", "4",
-                                          "-c", "0"
+                      Run Memory         ["-t"          , "mem <used>M",
+                                          "-w"          , "4",
+                                          "-c"          , "0",
+                                          "-H"          , "1500",
+                                          "--high"      , "#dc143c"
                                          ] 20,
 
                       Run Com "/home/maran/.pacupdate" [] "pacupdate" 36000,
@@ -30,20 +32,38 @@ Config { font = "xft:Mononoki Nerd Font:weight=bold:pixelsize=11:antialias=true:
                       Run Com "uname"    ["-r"] "" 3600,
 
                       Run Battery        [ "--template" , "<acstatus>",
-                                           "--Low"      , "10",
+                                           "--Low"      , "15",
                                            "--High"     , "80",
-                                           "--low"      , "darkred",
+                                           "--low"      , "#dc143c",
                                            "--",
                                            "-o"	        , "<left>% discharging",
-                                           "-O"	        , "<left>% charging",
-                                           "-i"	        , "<fc=#321852>100% charged</fc>"
+                                           "-O"	        , "<fc=#98be65><left>% charging</fc>",
+                                           "-i"	        , "<fc=#98be65>100% charged</fc>"
                                          ] 20,
 
-                      Run DynNetwork     [ "--template" , "<dev>: <rx> <tx>",
+                      Run DynNetwork     [ "--template" , "<dev> <rx> <tx>",
                                            "--minwidth" , "4",
                                            "-c", "0"
                                          ] 10,
 
                       Run UnsafeStdinReader
-                    ]
+                    ],
+
+         template = "%UnsafeStdinReader% }{
+<fc=#82AAFF>%uname%</fc>
+<fc=#666666> | </fc>
+<fc=#98be65>
+%cpu%
+<fc=#666666> | </fc>
+%memory%
+<fc=#666666> | </fc>
+%dynnetwork%
+<fc=#666666> | </fc>
+%pacupdate%
+<fc=#666666> | </fc>
+%battery%
+<fc=#666666> | </fc><fc=#82aaff>
+%date%</fc>
+</fc>
+"
        }
