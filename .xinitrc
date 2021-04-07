@@ -54,8 +54,9 @@ fi
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
+xmonad
 # gnomeDE
-exec gnome-session
+# exec gnome-session
 
 # awesomeWM
 # exec awesome
